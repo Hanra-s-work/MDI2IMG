@@ -2,7 +2,7 @@ build ==1.2.2.post1
 flake8 ==7.1.1
 pillow ==11.0.0
 pytest ==8.3.3
-wheel ==0.45.0
+wheel ==0.45.1
 display-tty ==1.1.7
 setuptools ==75.4.0
 window-asset-tkinter >=1.0.5
