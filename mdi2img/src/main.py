@@ -115,13 +115,13 @@ class Main:
         print("\t                 \t  - the name of the output file")
         print("\t                 \t  - the name of the output folder")
         print(
-            "[--debug|-d]         \tThis option will display additional information about what the program is doing."
+            "\t[--debug|-d]         \tThis option will display additional information about what the program is doing."
         )
         print(
-            "[--no-show|-ns]      \tThis option will instruct the program not to display the images once they were converted"
+            "\t[--no-show|-ns]      \tThis option will instruct the program not to display the images once they were converted"
         )
         print(
-            "[--format=<format>]  \tThis option allows you to change the default output format (tiff)"
+            "\t[--format=<format>]  \tThis option allows you to change the default output format (tiff)"
         )
         print()
         print("ABOUT:")
@@ -194,6 +194,7 @@ class Main:
             int: _description_: The return status of the call
         """
         if self.debug is True:
+            self.const.update_debug(self.debug)
             for i in [
                 ("self.src", self.src),
                 ("self.dest", self.dest),
