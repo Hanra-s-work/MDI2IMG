@@ -15,13 +15,25 @@ class ViewImage(WT):
     """
 
     def __init__(self, parent_window: tk.Tk = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1) -> None:
+        """
+        The constructor of the class
+
+        :param parent_window: The parent window
+        :param width: The width of the window
+        :param height: The height of the window
+        :param success: The success status code
+        :param error: The error status code
+        """
+
+        super(ViewImage, self).__init__()
+
         # Status codes
-        self.success = success
-        self.error = error
-        self.error_message = "Error: Path does not exist"
+        self.success: int = success
+        self.error: int = error
+        self.error_message: str = "Error: Path does not exist"
         # Saving width and height of the window
-        self.width = width
-        self.height = height
+        self.width: int = width
+        self.height: int = height
         # Creating parent window if it does not exist
         if parent_window is None:
             self.parent_window = self._create_parent_window()
@@ -31,40 +43,42 @@ class ViewImage(WT):
             self.parent_window
         )
         # Initialising the window position calculator
-        self.cwp = CWP(
+        self.cwp: CWP = CWP(
             self.host_dimensions["width"],
             self.host_dimensions["height"],
             width,
             height
         )
         # Image tracking
-        self._images_buffer = list()
-        self.image_data = list()
-        self.max_images = 0
-        self.current_image = 0
+        self._images_buffer: list = []
+        self.image_data: list = []
+        self.max_images: int = 0
+        self.current_image: int = 0
         # Window position
-        self.x_offset = 0
-        self.y_offset = 0
+        self.x_offset: int = 0
+        self.y_offset: int = 0
         # GUI config
-        self.bg = "white"
-        self.fg = "black"
+        self.bg: str = "white"
+        self.fg: str = "black"
         # Title section
-        self.title_label = tk.Label
+        self.title_label: tk.Label = tk.Label
         # image_viewer section
-        self.image_viewer = tk.Label
-        self.image_viewer_error = tk.Label
-        self.has_been_forgotten = False
+        self.image_viewer: tk.Label = tk.Label
+        self.image_viewer_error: tk.Label = tk.Label
+        self.has_been_forgotten: bool = False
         # button_prev section
-        self.button_prev = tk.Button
+        self.button_prev: tk.Button = tk.Button
         # button_next section
-        self.button_next = tk.Button
+        self.button_next: tk.Button = tk.Button
         # button_open_in_viewer section
-        self.button_open_in_viewer = tk.Button
+        self.button_open_in_viewer: tk.Button = tk.Button
         # The image counter
-        self.image_count = tk.Label
+        self.image_count: tk.Label = tk.Label
 
     def _create_parent_window(self) -> tk.Tk:
         """
+        This is the function in charge of initialising the base window that will be used to render the rest of the software.
+
         Create the parent window
         :return: The parent window
         """
@@ -72,9 +86,10 @@ class ViewImage(WT):
         window.withdraw()
         return window
 
-    def _load_image(self, image_path: str, width: int, height: int) -> dict:
+    def _load_image(self, image_path_src: str, width: int, height: int) -> dict:
         """
         Load the image into memory
+
         :param image_path: The path to the image to load
         :return: The image node
 
@@ -88,35 +103,35 @@ class ViewImage(WT):
             * "name": <the_name:str>
             * "error": <the_error:str>  
         """
-        if os.path.exists(image_path) is False:
+        if os.path.exists(image_path_src) is False:
             path_message = {
-                "name": image_path,
+                "name": image_path_src,
                 "error": self.error_message
             }
             self._images_buffer.append(self.error_message)
             self.image_data.append(path_message)
             return path_message
         data = self.load_image(
-            image_path=image_path,
+            image_path=image_path_src,
             width=width,
             height=height
         )
         if "img" in data:
-            current_name = image_path.replace("\\", "/")
+            current_name = image_path_src.replace("\\", "/")
             current_name = current_name.split("/")[-1]
             self._images_buffer.append(data["img"])
             node = {
                 "img": data["img"],
                 "width": width,
                 "height": height,
-                "path": image_path,
+                "path": image_path_src,
                 "name": current_name
             }
             self.image_data.append(node)
             return node
         else:
             node = {
-                "name": image_path,
+                "name": image_path_src,
                 "error": data["err_message"]
             }
             self._images_buffer.append(data["err_message"])
@@ -126,12 +141,13 @@ class ViewImage(WT):
     def _load_images(self, image_paths: list[str], width: int, height: int) -> None:
         """
         Load multiple images into memory
+
         :param image_paths: The paths to the images to load
         :return: None
         """
-        for index, item in enumerate(image_paths):
-            self._load_image(item, width, height)
-            self.max_images = index
+        for image_index, image_item in enumerate(image_paths):
+            self._load_image(image_item, width, height)
+            self.max_images = image_index
 
     def _update_current_image_displayed(self) -> None:
         """
@@ -479,17 +495,36 @@ class ViewImage(WT):
 
 
 if __name__ == "__main__":
-    window_width = 500
-    window_height = 400
+    import sys
+    ERROR = 1
+    SUCCESS = 0
+    WINDOW_WIDTH = 500
+    WINDOW_HEIGHT = 400
+    if (len(sys.argv) == 2 and sys.argv[1] in ("--help", "--h", "--?", "-h", "-?", "-help", "/?", "/h", "/help")):
+        print(f"Usage: python3 {sys.argv[0]} <image_directory_path>")
+        sys.exit(0)
+
+    if len(sys.argv) < 2:
+        print(f"Usage: python3 {sys.argv[0]} <image_directory_path>")
+        sys.exit(1)
+
+    image_path = sys.argv[1]
+    if os.path.isdir(sys.argv[1]) is False:
+        image_path = "../../sample_images"
+        print(
+            f"Error: '{sys.argv[1]}' is not a directory, defaulting to: {image_path}"
+        )
+        if os.path.isdir(image_path) is False:
+            print(f"Error: default path '{image_path}' is not a directory")
+            sys.exit(1)
     VII = ViewImage(
         None,
-        width=window_width,
-        height=window_height,
-        success=0,
-        error=1
+        width=WINDOW_WIDTH,
+        height=WINDOW_HEIGHT,
+        success=SUCCESS,
+        error=ERROR
     )
-    ressources = list()
-    image_path = "../sample_images"
+    ressources = []
     if os.path.exists(image_path) is True:
         images = os.listdir(image_path)
         for index, item in enumerate(images):
@@ -497,6 +532,6 @@ if __name__ == "__main__":
         ressources.append("Not a path")
     VII.view(
         ressources,
-        window_width,
-        window_height
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT
     )

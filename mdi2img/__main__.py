@@ -6,7 +6,7 @@
 ##
 
 import sys
-from .main import Main
+from src.main import Main
 
 MI = Main()
 status = MI.main()

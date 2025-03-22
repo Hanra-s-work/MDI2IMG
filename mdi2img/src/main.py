@@ -5,12 +5,13 @@
 
 import os
 import sys
+
 from sys import argv
 from display_tty import IDISP
 
-from .mdi2tiff import MDIToTiff
-from . import constants as CONST
-from .change_image_format import AVAILABLE_FORMATS, AVAILABLE_FORMATS_HELP
+from .img_to_tiff import MDIToTiff
+from .globals import constants as CONST
+from .convert_to_any import AVAILABLE_FORMATS, AVAILABLE_FORMATS_HELP
 
 
 class Main:
@@ -106,13 +107,13 @@ class Main:
             "\tINFO: '<argument>' --> required, '[argument]' --> optional '|' --> one or the other"
         )
         print("\t<SRC>            \tMust be either:")
+        print("\t                 \t  - a path to an mdi file")
+        print("\t                 \t  - a path to a folder containing mdi files")
         print("\t<-h>|<--help>    \tDisplay this help section and exit.")
         print("\t<-v>|<--version> \tDisplay the program's version and exit.")
-        print("\t                 \t- a path to an mdi file")
-        print("\t                 \t- a path to a folder containing mdi files")
         print("\t[DEST]           \tMust be either:")
-        print("\t                 \t- the name of the output file")
-        print("\t                 \t- the name of the output folder")
+        print("\t                 \t  - the name of the output file")
+        print("\t                 \t  - the name of the output folder")
         print(
             "[--debug|-d]         \tThis option will display additional information about what the program is doing."
         )
@@ -122,6 +123,7 @@ class Main:
         print(
             "[--format=<format>]  \tThis option allows you to change the default output format (tiff)"
         )
+        print()
         print("ABOUT:")
         print(f"This program was created by {CONST.__author__}")
         self._disp_version()

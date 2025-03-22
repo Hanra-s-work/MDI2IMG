@@ -5,8 +5,8 @@ This extension relies on the windows mdi2tiff program
 
 import os
 from typing import Union, List
-from . import constants as CONST
-from .change_image_format import ChangeImageFormat
+from ..globals import constants as CONST
+from ..convert_to_any import ChangeImageFormat
 
 
 class MDIToTiff:

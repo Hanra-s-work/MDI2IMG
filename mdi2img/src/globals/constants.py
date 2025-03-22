@@ -6,6 +6,7 @@
 ##
 
 import os
+import platform
 from typing import Union
 from random import randint
 from display_tty import Disp, TOML_CONF
@@ -14,7 +15,10 @@ from . import logo as LOG
 SUCCESS = 0
 ERROR = 1
 ERR = ERROR
-TMP_IMG_FOLDER = "%TEMP%/mdi_to_img_temp"
+if platform.system() == "Windows":
+    TMP_IMG_FOLDER = "%TEMP%/mdi_to_img_temp"
+else:
+    TMP_IMG_FOLDER = "/tmp/mdi_to_img_temp"
 
 SELECTED_LIST = LOG.__logo_ascii_art__
 SPLASH_NAME = list(SELECTED_LIST)[randint(0, len(SELECTED_LIST) - 1)]
@@ -43,7 +47,7 @@ class Constants:
             file_name="",
             file_descriptor=None,
             debug=self.debug,
-            logger=None
+            logger=self.__class__.__name__
         )
         self.temporary_folder = self._get_temp_folder(self.env)
         self.temporary_img_folder = f"{self.temporary_folder}/mdi_to_img_temp"
@@ -95,52 +99,52 @@ class Constants:
                 msg += f"{self.temporary_img_folder}'): {e}"
                 self.pcritical(msg)
 
-    def perror(self, string: str = "") -> None:
+    def perror(self, string: str = "", func_name: str = "perror") -> None:
         """_summary_
         This is a function that will output an error on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
         """
-        self.dttyi.logger.error("(mdi2img) %s", string)
+        self.dttyi.log_error(string, f"(mdi2img) {func_name}")
 
-    def pwarning(self, string: str = "") -> None:
+    def pwarning(self, string: str = "", func_name: str = "pwarning") -> None:
         """_summary_
         This is a function that will output a warning on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
         """
-        self.dttyi.logger.warning("(mdi2img) %s", string)
+        self.dttyi.log_warning(string, f"(mdi2img) {func_name}")
 
-    def pcritical(self, string: str = "") -> None:
+    def pcritical(self, string: str = "", func_name: str = "pcritical") -> None:
         """_summary_
         This is a function that will output a critical error on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
         """
-        self.dttyi.logger.critical("(mdi2img) %s", string)
+        self.dttyi.log_critical(string, f"(mdi2img) {func_name}")
 
-    def psuccess(self, string: str = "") -> None:
+    def psuccess(self, string: str = "", func_name: str = "psuccess") -> None:
         """_summary_
         This is a function that will output a success message on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
         """
-        self.dttyi.logger.success("(mdi2img) %s", string)
+        self.dttyi.logger.success(string, f"(mdi2img) {func_name}")
 
-    def pinfo(self, string: str = "") -> None:
+    def pinfo(self, string: str = "", func_name: str = "pinfo") -> None:
         """_summary_
         This is a function that will output an information message on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
         """
-        self.dttyi.logger.info("(mdi2img) %s", string)
+        self.dttyi.log_info(string, f"(mdi2img) {func_name}")
 
-    def pdebug(self, string: str = "") -> None:
+    def pdebug(self, string: str = "", func_name: str = "pdebug") -> None:
         """_summary_
         This is a function that will output a debug message on the terminal.
 
@@ -148,7 +152,7 @@ class Constants:
             string (str, optional): _description_. Defaults to "".
         """
         if self.debug is True:
-            self.dttyi.logger.debug("(mdi2img) %s", string)
+            self.dttyi.log_debug(string, f"(mdi2img) {func_name}")
 
     def err_item_not_found(self, directory: bool = True,  item_type: str = "input", path: str = '', critical: bool = False, additional_text: str = "") -> None:
         """_summary_

@@ -7,7 +7,15 @@ from typing import Union, List
 from PIL import Image
 
 from display_tty import Disp
-from .constants import Constants, ERROR, SUCCESS
+from ..globals.constants import Constants, ERROR, SUCCESS
+
+# ------------------------------------ Format help ------------------------------------
+# The help for the available formats is stored in a dictionary. This dictionary is used to display the help message when the user requests it.
+# The dictionary is structured as follows:
+# {
+#     "format_name": "format_description",
+#     ...
+# }
 
 AVAILABLE_FORMATS_HELP = {
     "png": "Portable Network Graphics is a lossless format that supports transparency. APNG (Animated PNG) is an extension supporting simple animations.",
@@ -78,8 +86,12 @@ AVAILABLE_FORMATS_HELP = {
     "xpm": "X PixMap format, similar to XBM, but supports color. It's used for simple graphics in the X Window System."
 }
 
+# Store a list of the available formats based on the ones provided in the help dictionary.
 
 AVAILABLE_FORMATS = list(AVAILABLE_FORMATS_HELP)
+
+# ------------------------------------ ChangeImageFormat ------------------------------------
+# Function in charge of converting the image to the desired format.
 
 
 class ChangeImageFormat:
