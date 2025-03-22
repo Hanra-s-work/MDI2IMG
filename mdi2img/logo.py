@@ -2952,16 +2952,16 @@ $$XXXXXXXXXXXXXXXXXXXXXXXXXXXXx++++++++++++++xxXXXXXXXXxxxxxx+++++++++++xxxxx+++
 )
 
 if __name__ == "__main__":
-    all_logo_length = len(__logo_all__)
-    all_logo_ascii_art = len(__logo_ascii_art__)
-    all_logo_darling = len(__logo_darling__)
-    info_string = f"There are:\n{all_logo_length} ascii arts\n"
-    info_string += f"{all_logo_ascii_art} logos\n{all_logo_darling} darling ascii art"
-    print(info_string)
+    ALL_LOGO_LENGTH = len(__logo_all__)
+    ALL_LOGO_ASCII_ART = len(__logo_ascii_art__)
+    ALL_LOGO_DARLING = len(__logo_darling__)
+    INFO_STRING = f"There are:\n{ALL_LOGO_LENGTH} ascii arts\n"
+    INFO_STRING += f"{ALL_LOGO_ASCII_ART} logos\n{ALL_LOGO_DARLING} darling ascii art"
+    print(INFO_STRING)
     for key, value in __logo_all__.items():
         if isinstance(value, list):
             for b in value:
                 print(b)
         else:
             print(value)
-    print(info_string)
+    print(INFO_STRING)
