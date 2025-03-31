@@ -6,6 +6,7 @@
 ##
 
 import os
+import inspect
 import platform
 from typing import Union
 from random import randint
@@ -15,10 +16,6 @@ from . import logo as LOG
 SUCCESS = 0
 ERROR = 1
 ERR = ERROR
-if platform.system() == "Windows":
-    TMP_IMG_FOLDER = "%TEMP%/mdi_to_img_temp"
-else:
-    TMP_IMG_FOLDER = "/tmp/mdi_to_img_temp"
 
 SELECTED_LIST = LOG.__logo_ascii_art__
 SPLASH_NAME = list(SELECTED_LIST)[randint(0, len(SELECTED_LIST) - 1)]
@@ -30,46 +27,78 @@ __author__ = "(c) Henry Letellier"
 
 _CLASS_NAME = "Constants"
 
+_CWD = os.path.dirname(os.path.abspath(__file__))
+
 
 class Constants:
     """_summary_
     This is the class that will store general methods and variables that will be used over different classes.
     """
 
-    def __init__(self, binary_name: str = "MDI2TIF.EXE", output_format: str = "default") -> None:
+    def __init__(self, binary_name: str = "MDI2TIF.EXE", output_format: str = "default", cwd: str = _CWD, debug: bool = False) -> None:
+        _func_name = inspect.currentframe().f_code.co_name
+        _padding = "-" * 10
         # ---------------------------- Local global variables ----------------------------
         self.env = os.environ
         self.author = __author__
-        self.debug = False
+        self.debug = debug
         self.binary_name = binary_name
         self.in_directory = f"{os.getcwd()}/in"
         self.out_directory = f"{os.getcwd()}/out"
         self.out_format = output_format
+        self.cwd = cwd
+        # ---------------------------- Display debug object ----------------------------
         self.dttyi = Disp(
             toml_content=TOML_CONF,
             save_to_file=False,
             file_name="",
             file_descriptor=None,
             debug=self.debug,
-            logger=None  # self.__class__.__name__
+            logger="mdi2img"
+        )
+        self.pdebug(
+            f"{_padding} Locating temporary folder {_padding}",
+            _func_name
         )
         self.temporary_folder = self._get_temp_folder(self.env)
         self.temporary_img_folder = f"{self.temporary_folder}/mdi_to_img_temp"
         self.log_file_location = f"{self.temporary_folder}/mdi2tiff.log"
+        self.pdebug(
+            f"{_padding} Creating temporary folder if not present {_padding}",
+            _func_name
+        )
         self._create_temp_if_not_present()
+        self.pdebug(
+            f"{_padding} Searching for binary location {_padding}",
+            _func_name
+        )
+        self.pdebug(f"Binary name: '{self.binary_name}'", _func_name)
         self.binary_path = self._find_mdi2tiff_binary(self.binary_name)
+        self.pdebug(f"Binary path: '{self.binary_path}'", _func_name)
         # ---------------------------- Debug data ----------------------------
-        self.pdebug(f"self.env = {self.env}")
-        self.pdebug(f"self.author = {self.author}")
-        self.pdebug(f"self.debug = {self.debug}")
-        self.pdebug(f"self.binary_name = {self.binary_name}")
-        self.pdebug(f"self.in_directory = {self.in_directory}")
-        self.pdebug(f"self.out_directory = {self.out_directory}")
-        self.pdebug(f"self.out_format = {self.out_format}")
-        self.pdebug(f"self.temporary_folder = {self.temporary_folder}")
-        self.pdebug(f"self.temporary_img_folder = {self.temporary_img_folder}")
-        self.pdebug(f"self.log_file_location = {self.log_file_location}")
-        self.pdebug(f"self.binary_path = {self.binary_path}")
+        self.pdebug(
+            f"{_padding} Displaying variables located in the Constants class {_padding}",
+            _func_name
+        )
+        self.pdebug(f"self.env = {self.env}", _func_name)
+        self.pdebug(f"self.author = {self.author}", _func_name)
+        self.pdebug(f"self.debug = {self.debug}", _func_name)
+        self.pdebug(f"self.binary_name = {self.binary_name}", _func_name)
+        self.pdebug(f"self.in_directory = {self.in_directory}", _func_name)
+        self.pdebug(f"self.out_directory = {self.out_directory}", _func_name)
+        self.pdebug(f"self.out_format = {self.out_format}", _func_name)
+        self.pdebug(
+            f"self.temporary_folder = {self.temporary_folder}",
+            _func_name
+        )
+        self.pdebug(
+            f"self.temporary_img_folder = {self.temporary_img_folder}",
+            _func_name
+        )
+        self.pdebug(
+            f"self.log_file_location = {self.log_file_location}", _func_name
+        )
+        self.pdebug(f"self.binary_path = {self.binary_path}", _func_name)
 
     def _get_temp_folder(self, env: dict[str, str]) -> str:
         """_summary_
@@ -78,6 +107,8 @@ class Constants:
         Returns:
             str: _description_: The value of the research.
         """
+        if platform.system() != "Windows":
+            return "/tmp"
         if "TEMP" in env:
             return env["TEMP"]
         if "TMP" in env:
@@ -91,18 +122,25 @@ class Constants:
         :return:
             str: Full path to the mdi2tiff binary if found, None otherwise.
         """
+        _func_name = inspect.currentframe().f_code.co_name
 
-        self.pdebug(f"Searching for binary: '{binary_name}'")
+        self.pdebug(f"Searching for binary: '{binary_name}'", _func_name)
 
-        current_script_directory = os.path.dirname(os.path.abspath(__file__))
+        if self.cwd == "":
+            current_script_directory = os.path.dirname(
+                os.path.abspath(__file__)
+            )
+        else:
+            current_script_directory = self.cwd
 
-        self.pdebug(f"Current script directory: '{current_script_directory}'")
+        self.pdebug(
+            f"Current script directory: '{current_script_directory}'", _func_name)
 
         binary_path = os.path.join(
             current_script_directory, "bin", binary_name
         )
 
-        self.pdebug(f"Binary path: '{binary_path}'")
+        self.pdebug(f"Binary path: '{binary_path}'", _func_name)
 
         if os.path.exists(binary_path) is True:
             return binary_path
@@ -112,20 +150,25 @@ class Constants:
         """_summary_
         Create the temporary folder if it does not exist.
         """
+        _func_name = inspect.currentframe().f_code.co_name
         self.pdebug(
-            f"Temporary export location: '{self.temporary_img_folder}'"
+            f"Temporary export location: '{self.temporary_img_folder}'",
+            _func_name
         )
         if os.path.exists(self.temporary_img_folder) is False:
-            self.pinfo("Temporary export location does not exist. Creating.")
+            self.pinfo(
+                "Temporary export location does not exist. Creating.",
+                _func_name
+            )
             try:
                 os.makedirs(self.temporary_img_folder, exist_ok=True)
                 msg = "Temporary export folder created in: "
                 msg += f"'{self.temporary_img_folder}'."
-                self.psuccess(msg)
+                self.psuccess(msg, _func_name)
             except os.error as e:
                 msg = "Error creating temporary export location ('"
                 msg += f"{self.temporary_img_folder}'): {e}"
-                self.pcritical(msg)
+                self.pcritical(msg, _func_name)
 
     def update_debug(self, debug: bool) -> None:
         """_summary_
@@ -146,7 +189,7 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
-        self.dttyi.log_error(string, f"mdi2img::{class_name}::{func_name}")
+        self.dttyi.log_error(string, f"{class_name}::{func_name}")
 
     def pwarning(self, string: str = "", func_name: str = "pwarning", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -157,7 +200,7 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
-        self.dttyi.log_warning(string, f"mdi2img::{class_name}::{func_name}")
+        self.dttyi.log_warning(string, f"{class_name}::{func_name}")
 
     def pcritical(self, string: str = "", func_name: str = "pcritical", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -168,7 +211,7 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
-        self.dttyi.log_critical(string, f"mdi2img::{class_name}::{func_name}")
+        self.dttyi.log_critical(string, f"{class_name}::{func_name}")
 
     def psuccess(self, string: str = "", func_name: str = "psuccess", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -180,7 +223,7 @@ class Constants:
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         self.dttyi.logger.success(
-            string, f"mdi2img::{class_name}::{func_name}")
+            string, f"{class_name}::{func_name}")
 
     def pinfo(self, string: str = "", func_name: str = "pinfo", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -191,7 +234,7 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
-        self.dttyi.log_info(string, f"mdi2img::{class_name}::{func_name}")
+        self.dttyi.log_info(string, f"{class_name}::{func_name}")
 
     def pdebug(self, string: str = "", func_name: str = "pdebug", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -203,7 +246,7 @@ class Constants:
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if self.debug is True:
-            self.dttyi.log_debug(string, f"mdi2img::{class_name}::{func_name}")
+            self.dttyi.log_debug(string, f"{class_name}::{func_name}")
 
     def err_item_not_found(self, directory: bool = True,  item_type: str = "input", path: str = '', critical: bool = False, additional_text: str = "") -> None:
         """_summary_
@@ -215,6 +258,7 @@ class Constants:
             path (str, optional): _description_: The path of the directory.
             critical (bool, optional): _description_ Is the message of critical importance. Defaults to True.
         """
+        _func_name = inspect.currentframe().f_code.co_name
         dir_str = "directory"
         if directory is False:
             dir_str = "file"
@@ -222,9 +266,9 @@ class Constants:
         msg += f"{additional_text}"
         if critical is True:
             msg += "\n Aborting operation(s)!"
-            self.pcritical(msg)
+            self.pcritical(msg, _func_name)
         else:
-            self.pwarning(msg)
+            self.pwarning(msg, _func_name)
 
     def err_binary_path_not_found(self) -> None:
         """_summary_
@@ -232,6 +276,7 @@ class Constants:
         Args:
             critical (bool, optional): _description_ Is the message of critical importance. Defaults to True.
         """
+        _func_name = inspect.currentframe().f_code.co_name
         msg = f"Binary path: '{self.binary_path}' was not found."
         msg += "\nAborting operations."
-        self.pcritical(msg)
+        self.pcritical(msg, _func_name)
