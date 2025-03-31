@@ -1,4 +1,4 @@
 flake8 ==7.2.0
 pillow ==11.1.0
-display-tty ==1.1.8
+display-tty ==1.1.9
 window-asset-tkinter >=1.0.5
