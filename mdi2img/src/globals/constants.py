@@ -16,6 +16,7 @@ from . import logo as LOG
 SUCCESS = 0
 ERROR = 1
 ERR = ERROR
+SKIPPED = 3
 
 SELECTED_LIST = LOG.__logo_ascii_art__
 SPLASH_NAME = list(SELECTED_LIST)[randint(0, len(SELECTED_LIST) - 1)]
@@ -34,7 +35,7 @@ class Constants:
     This is the class that will store general methods and variables that will be used over different classes.
     """
 
-    def __init__(self, binary_name: str = "MDI2TIF.EXE", output_format: str = "default", cwd: str = _CWD, debug: bool = False) -> None:
+    def __init__(self, binary_name: str = "MDI2TIF.EXE", output_format: str = "default", cwd: str = _CWD, error: int = ERROR, success: int = SUCCESS, debug: bool = False) -> None:
         _func_name = inspect.currentframe().f_code.co_name
         _padding = "-" * 10
         # ---------------------------- Local global variables ----------------------------
@@ -46,14 +47,20 @@ class Constants:
         self.out_directory = f"{os.getcwd()}/out"
         self.out_format = output_format
         self.cwd = cwd
+        self.success = success
+        self.error = error
         # ---------------------------- Display debug object ----------------------------
         self.dttyi = Disp(
             toml_content=TOML_CONF,
             save_to_file=False,
             file_name="",
             file_descriptor=None,
-            debug=True,  # self.debug,
-            logger="mdi2img"
+            debug=self.debug,
+            logger="mdi2img",
+            success=self.success,
+            error=self.error,
+            log_warning_when_present=self.debug,
+            log_errors_when_present=True,
         )
         self.level_success = 200
         self.dttyi.add_custom_level(
@@ -78,9 +85,15 @@ class Constants:
             f"{_padding} Searching for binary location {_padding}",
             _func_name
         )
-        self.pdebug(f"Binary name: '{self.binary_name}'", _func_name)
+        self.pdebug(
+            f"Binary name: '{self.binary_name}'",
+            _func_name
+        )
         self.binary_path = self._find_mdi2tiff_binary(self.binary_name)
-        self.pdebug(f"Binary path: '{self.binary_path}'", _func_name)
+        self.pdebug(
+            f"Binary path: '{self.binary_path}'",
+            _func_name
+        )
         # ---------------------------- Debug data ----------------------------
         self.pdebug(
             f"{_padding} Displaying variables located in the Constants class {_padding}",
@@ -105,7 +118,6 @@ class Constants:
             f"self.log_file_location = {self.log_file_location}", _func_name
         )
         self.pdebug(f"self.binary_path = {self.binary_path}", _func_name)
-        self.psuccess("This is a success message", _func_name)
 
     @staticmethod
     def get_temp_folder(env: dict[str, str]) -> str:
@@ -142,10 +154,27 @@ class Constants:
             current_script_directory = self.cwd
 
         self.pdebug(
-            f"Current script directory: '{current_script_directory}'", _func_name)
+            f"Current script directory: '{current_script_directory}'",
+            _func_name
+        )
+        self.pdebug(
+            f"Current working directory: '{self.cwd}'",
+            _func_name
+        )
+        self.pdebug(
+            f"Binary name: '{binary_name}'",
+            _func_name
+        )
+
+        if isinstance(binary_name, str) is False or binary_name == "":
+            msg = "Binary name is not a string or is empty."
+            self.pcritical(msg, _func_name)
+            return None
 
         binary_path = os.path.join(
-            current_script_directory, "bin", binary_name
+            current_script_directory,
+            "bin",
+            binary_name
         )
 
         self.pdebug(f"Binary path: '{binary_path}'", _func_name)
@@ -188,13 +217,13 @@ class Constants:
         self.debug = debug
         self.dttyi.update_disp_debug(debug)
 
-    def perror(self, string: str = "", func_name: str = "perror", class_name: str = _CLASS_NAME) -> None:
+    def perror(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output an error on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:
@@ -205,13 +234,13 @@ class Constants:
                 func_name = _func_name.f_code.co_name
         self.dttyi.log_error(string, f"{class_name}::{func_name}")
 
-    def pwarning(self, string: str = "", func_name: str = "pwarning", class_name: str = _CLASS_NAME) -> None:
+    def pwarning(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output a warning on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:
@@ -222,13 +251,13 @@ class Constants:
                 func_name = _func_name.f_code.co_name
         self.dttyi.log_warning(string, f"{class_name}::{func_name}")
 
-    def pcritical(self, string: str = "", func_name: str = "pcritical", class_name: str = _CLASS_NAME) -> None:
+    def pcritical(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output a critical error on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:
@@ -239,13 +268,13 @@ class Constants:
                 func_name = _func_name.f_code.co_name
         self.dttyi.log_critical(string, f"{class_name}::{func_name}")
 
-    def psuccess(self, string: str = "", func_name: str = "psuccess", class_name: str = _CLASS_NAME) -> None:
+    def psuccess(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output a success message on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:
@@ -260,13 +289,13 @@ class Constants:
             f"{class_name}::{func_name}"
         )
 
-    def pinfo(self, string: str = "", func_name: str = "pinfo", class_name: str = _CLASS_NAME) -> None:
+    def pinfo(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output an information message on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:
@@ -277,13 +306,13 @@ class Constants:
                 func_name = _func_name.f_code.co_name
         self.dttyi.log_info(string, f"{class_name}::{func_name}")
 
-    def pdebug(self, string: str = "", func_name: str = "pdebug", class_name: str = _CLASS_NAME) -> None:
+    def pdebug(self, string: str = "", func_name: Union[str, None] = None, class_name: str = _CLASS_NAME) -> None:
         """_summary_
         This is a function that will output a debug message on the terminal.
 
         Args:
             string (str, optional): _description_. Defaults to "".
-            func_name (str, optional): _description_. Defaults to "perror".
+            func_name (Union[str, None], optional): _description_. Defaults to None.
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
         if isinstance(func_name, str) is False or func_name is None:

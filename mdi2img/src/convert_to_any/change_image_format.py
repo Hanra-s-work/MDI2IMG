@@ -104,6 +104,7 @@ class ChangeImageFormat:
         self.error = error
         self.const: Constants = constants
         self.disp: Disp = self.const.dttyi
+        self.class_name = self.__class__.__name__
 
     def _check_output_file(self, output_file: str, img_format: str) -> Union[str, List[str]]:
         """_summary_
@@ -132,12 +133,18 @@ class ChangeImageFormat:
         if output_file_format != img_format:
             warning_msg = "The output format and the format in the file name do not match! "
             warning_msg += "The program will default to the first available format of the two."
-            self.const.pwarning(warning_msg)
+            self.const.pwarning(
+                warning_msg,
+                class_name=self.class_name
+            )
             if output_file_format in AVAILABLE_FORMATS:
                 img_format = output_file_format
             else:
                 output_file_format = img_format
-            self.const.pinfo(f"The format is now {img_format}")
+            self.const.pinfo(
+                f"The format is now {img_format}",
+                class_name=self.class_name
+            )
         if img_format != "tiff" and output_file_format != "tiff":
             temp_export = f"{self.const.temporary_img_folder}/"
             temp_export += f"{output_file_name}.tiff"
@@ -174,18 +181,28 @@ class ChangeImageFormat:
             int: _description_: The status of the convertion (success:int  or error:int)
         """
         if image == "":
-            self.const.pcritical("No image provided!")
+            self.const.pcritical(
+                "No image provided!",
+                class_name=self.class_name
+            )
             return self.error
         if output_name == "":
             self.const.pwarning(
-                "Not destination name was provided, generating one."
+                "Not destination name was provided, generating one.",
+                class_name=self.class_name
             )
             output_name = self._get_new_name(image, img_format)
-            self.const.pinfo(f"The destination name is '{output_name}'\n")
+            self.const.pinfo(
+                f"The destination name is '{output_name}'\n",
+                class_name=self.class_name
+            )
         try:
             img = Image.open(image)
             img.save(output_name, format=img_format)
             return self.success
         except Exception as e:
-            self.const.perror(f"Failed to convert image:\nError: '{e}'")
+            self.const.perror(
+                f"Failed to convert image:\nError: '{e}'",
+                class_name=self.class_name
+            )
             return self.error

@@ -16,15 +16,17 @@ class MDIToTiff:
         :param error: The exit code of a failed conversion
     """
 
-    def __init__(self, binary_name: Union[str, CONST.Constants] = "", success: int = 0, error: int = 1) -> None:
+    def __init__(self, binary_name: Union[str, CONST.Constants] = "", success: int = 0, error: int = 1, skipped: int = CONST.SKIPPED) -> None:
         self.error = error
         self.success = success
-        self.skipped = int(error * success)
-        if callable(binary_name) is True:
+        self.skipped = skipped
+        if callable(binary_name) is False:
             self.const = binary_name
         else:
             self.const = CONST.Constants(binary_name)
         self.bin_path = self.const.binary_path
+        # ------------------------ Store the class name ------------------------
+        self.class_name = self.__class__.__name__
         # ------------------- Start Folder conversion stats --------------------
         self.session_active = False
         self.total_items = 0
@@ -41,7 +43,7 @@ class MDIToTiff:
             success=self.success,
             error=self.error
         )
-        # ----------------------(- End image conversion -----(------------------
+        # ------------------------ End image conversion ------------------------
 
     def _reset_folder_conversion_stats_session(self) -> None:
         """_summary_
@@ -92,16 +94,40 @@ class MDIToTiff:
         """_summary_
         Display the conversion stats
         """
-        self.const.pinfo(f"Total items: {self.total_items}")
-        self.const.pinfo(f"Total folders: {self.total_folders}")
-        self.const.pinfo(f"Total number of files: {self.total_nb_of_files}")
-        self.const.pinfo(f"Total files skipped: {self.total_files_skipped}")
-        self.const.pinfo(f"Total files success: {self.total_files_success}")
-        self.const.pinfo(f"Total files fails: {self.total_files_fails}")
+        self.const.pinfo(
+            f"Total items: {self.total_items}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Total folders: {self.total_folders}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Total number of files: {self.total_nb_of_files}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Total files skipped: {self.total_files_skipped}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Total files success: {self.total_files_success}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Total files fails: {self.total_files_fails}",
+            class_name=self.class_name
+        )
         if self.global_status == self.success:
-            self.const.psuccess("All files have been converted successfully.")
+            self.const.psuccess(
+                "All files have been converted successfully.",
+                class_name=self.class_name
+            )
         else:
-            self.const.perror("Some files could not be converted.")
+            self.const.perror(
+                "Some files could not be converted.",
+                class_name=self.class_name
+            )
 
     def _run_conversion_steps(self, input_file: str, output_file: str, image_format: str) -> int:
         """_summary_
@@ -153,7 +179,10 @@ class MDIToTiff:
             )
             return self.error
         if os.path.exists(output_file) is True:
-            self.const.pwarning(f"'{output_file}' already exists, skipping.")
+            self.const.pwarning(
+                f"'{output_file}' already exists, skipping.",
+                class_name=self.class_name
+            )
             if self.session_active is True:
                 return self.skipped
             return self.success
@@ -169,7 +198,10 @@ class MDIToTiff:
         if exit_code == self.success:
             if self.session_active is False:
                 msg = f"{input_file} -> {output_file}: ok"
-                self.const.psuccess(msg)
+                self.const.psuccess(
+                    msg,
+                    class_name=self.class_name
+                )
             return exit_code
         return self.error
 
@@ -187,13 +219,15 @@ class MDIToTiff:
         if input_directory == "":
             e = self.const.in_directory
             self.const.pwarning(
-                f"No input directory was found, defaulting to: '{e}'"
+                f"No input directory was found, defaulting to: '{e}'",
+                class_name=self.class_name
             )
             input_directory = e
         if output_directory == "":
             e = self.const.out_directory
             self.const.pwarning(
-                f"No output directory was found, defaulting to: '{e}'"
+                f"No output directory was found, defaulting to: '{e}'",
+                class_name=self.class_name
             )
             output_directory = e
         if self.bin_path is None:
@@ -223,20 +257,30 @@ class MDIToTiff:
                     output_directory, file.replace(".mdi", ".tiff")
                 )
                 self.const.pinfo(
-                    f"Converting '{input_file}' to '{output_file}'"
+                    f"Converting '{input_file}' to '{output_file}'",
+                    class_name=self.class_name
                 )
                 status = self.convert(input_file, output_file, img_format)
                 self._update_folder_conversion_stat_session(status)
                 if status == self.success:
                     msg = f"File '{input_file}' has been converted to "
                     msg += f"'{output_file}'."
-                    self.const.psuccess(msg)
+                    self.const.psuccess(
+                        msg,
+                        class_name=self.class_name
+                    )
                 elif status == self.skipped:
                     msg = f"File '{input_file}' was skipped."
-                    self.const.pinfo(msg)
+                    self.const.pinfo(
+                        msg,
+                        class_name=self.class_name
+                    )
                 else:
                     msg = f"File '{input_file}' could not be converted to "
                     msg += f"'{output_file}'"
-                    self.const.perror(msg)
+                    self.const.perror(
+                        msg,
+                        class_name=self.class_name
+                    )
         self._display_folder_conversion_stat_session()
         return self.global_status

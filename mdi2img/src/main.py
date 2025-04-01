@@ -5,7 +5,6 @@
 
 import os
 import sys
-import inspect
 
 from sys import argv
 from display_tty import IDISP
@@ -24,40 +23,55 @@ class Main:
     This is the main class of the program
     """
 
-    def __init__(self, success: int = CONST.SUCCESS, error: int = CONST.ERROR, show: bool = True, cwd: str = _CWD, debug: bool = False, splash: bool = True) -> None:
-        self.argv = argv[1:]
-        self.argc = len(self.argv)
-        self._display_splash_screen(splash)
-        self.success = success
+    def __init__(self, success: int = CONST.SUCCESS, error: int = CONST.ERROR, skipped: int = CONST.SKIPPED, show: bool = True, cwd: str = _CWD, binary_name: str = "MDI2TIF.EXE", debug: bool = False, splash: bool = True) -> None:
+        # -------------------------- Inherited values --------------------------
+        self.cwd = cwd
+        self.show = show
         self.error = error
-        self.binary_name = "MDI2TIF.EXE"
         self.debug = debug
+        self.success = success
+        self.skipped = skipped
+        self.binary_name = binary_name
+        # ------------------- Check for a debug flag in argv -------------------
         for i in argv:
             if i.lower() in DEBUG_RULES:
                 self.debug = True
                 break
-        self.show = show
+        # ------------------------ Argv pre-processing  ------------------------
+        self.argv = argv[1:]
+        self.argc = len(self.argv)
+        # ----------------------------- Class name -----------------------------
+        self.class_name = self.__class__.__name__
+        # ------------------- Display the programs Boot logo -------------------
+        self._display_splash_screen(splash)
+        # ------------- Set basic variables required for the class -------------
         self.src = ""
         self.dest = ""
         self.available_formats = AVAILABLE_FORMATS
         self.dest_found = False
         self.output_format = "default"
-        self.cwd = cwd
+        # ------------------- Initialise the constants class -------------------
         self.const = CONST.Constants(
             self.binary_name,
             self.output_format,
             self.cwd,
+            self.error,
+            self.success,
             self.debug
         )
+        # -------------- Check the arguments provided by the user --------------
         self._check_args()
+        # ---- Check the destination variable before defaulting to fallback ----
         if self.dest_found is False:
             self.dest = self.const.temporary_img_folder
+        # ------------------- Initialise the MDIToTiff class -------------------
         self.mdi_to_tiff_initialised: MDIToTiff = MDIToTiff(
             self.const,
             self.success,
-            self.error
+            self.error,
+            self.skipped
         )
-        self.class_name = self.__class__.__name__
+        # -------------------- End of class initialisation  --------------------
 
     def _display_splash_screen(self, display: bool = True) -> None:
         """_summary_
@@ -188,7 +202,8 @@ class Main:
                     skip_one = True
                 else:
                     self.const.pcritical(
-                        f"No destination path provided for the {item} argument, aborting!"
+                        f"No destination path provided for the {item} argument, aborting!",
+                        class_name=self.class_name
                     )
                     sys.exit(self.error)
                 if os.path.exists(path) is True:
@@ -196,13 +211,14 @@ class Main:
                     self.dest_found = True
                 else:
                     self.const.pcritical(
-                        f"The destination path '{path}' does not exist, aborting!"
+                        f"The destination path '{path}' does not exist, aborting!",
+                        class_name=self.class_name
                     )
                     sys.exit(self.error)
             if is_path is True and self.dest_found is True:
                 self.const.pwarning(
-                    "(mdi2img) Argument '%s' was not expected, ignoring it.",
-                    f"{item}"
+                    f"Argument '{item}' was not expected, ignoring it.",
+                    class_name=self.class_name
                 )
                 continue
             if arg in DEBUG_RULES:
@@ -216,10 +232,16 @@ class Main:
                     arg.split("=")[1]
                 )
         if src_found is False:
-            IDISP.logger.critical(
-                "(mdi2img) No source path provided, aborting!"
+            self.const.pcritical(
+                "No source path provided, aborting!",
+                class_name=self.class_name
             )
             sys.exit(self.error)
+        else:
+            self.const.pdebug(
+                f"Source path found: {self.src}",
+                class_name=self.class_name
+            )
 
     def main(self) -> int:
         """_summary_
@@ -228,7 +250,6 @@ class Main:
         Returns:
             int: _description_: The return status of the call
         """
-        _func_name = inspect.currentframe().f_code.co_name
         if self.debug is True:
             self.const.update_debug(self.debug)
             for i in [
@@ -240,15 +261,13 @@ class Main:
                 ("self.output_format", self.output_format)
             ]:
                 self.const.pdebug(
-                    f"(main) Variable '{i[0]}' = '{i[1]}'",
-                    _func_name,
-                    self.class_name
+                    f"Variable '{i[0]}' = '{i[1]}'",
+                    class_name=self.class_name
                 )
         if os.path.isdir(self.src) is True:
             self.const.pdebug(
-                "(main) The provided source path is a folder.",
-                _func_name,
-                self.class_name
+                "The provided source path is a folder.",
+                class_name=self.class_name
             )
             return self.mdi_to_tiff_initialised.convert_all(
                 self.src,
@@ -257,9 +276,8 @@ class Main:
             )
         if os.path.isfile(self.src) is True:
             self.const.pdebug(
-                "(main) The provided source path is a file",
-                _func_name,
-                self.class_name
+                "The provided source path is a file",
+                class_name=self.class_name
             )
             return self.mdi_to_tiff_initialised.convert(
                 self.src,
@@ -268,12 +286,10 @@ class Main:
             )
         self.const.pdebug(
             "The provided path does npt correspond to a known type.",
-            _func_name,
-            self.class_name
+            class_name=self.class_name
         )
         self.const.pcritical(
             f"The source path '{self.src}' does not exist or is neither a folder or a file\nAborting!",
-            _func_name,
-            self.class_name
+            class_name=self.class_name
         )
         return self.error
