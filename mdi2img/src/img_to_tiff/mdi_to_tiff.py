@@ -4,6 +4,8 @@ This extension relies on the windows mdi2tiff program
 """
 
 import os
+import shutil
+import platform
 from typing import Union, List
 from ..globals import constants as CONST
 from ..convert_to_any import ChangeImageFormat
@@ -137,6 +139,164 @@ class MDIToTiff:
                 class_name=self.class_name
             )
 
+    def _is_bin_present(self, command: str) -> bool:
+        """
+        Check if a command is available using shutil.which (Python 3.3+)
+        Works across all platforms.
+
+        Args:
+            command (str): The command to check
+
+        Returns:
+            bool: True if the command is available, False otherwise
+        """
+        return shutil.which(command) is not None
+
+    def _is_dotnet_binary(self, binary_path: str) -> bool:
+        """
+        Detect if a binary is a .NET application by checking its headers.
+        This is a simplified detection - a more robust implementation would 
+        use libraries like 'pefile' for proper PE header analysis.
+
+        Args:
+            binary_path (str): Path to the binary
+
+        Returns:
+            bool: True if it appears to be a .NET application
+        """
+        try:
+            # A very basic check - look for common .NET signatures in the file
+            self.const.pdebug(
+                f"Checking if binary is .NET: {binary_path}",
+                class_name=self.class_name
+            )
+            with open(binary_path, 'rb') as f:
+                content = f.read(8192)  # Read first 8KB
+
+                self.const.pdebug(
+                    f"Binary content read: {content[:50]}...",
+                    class_name=self.class_name
+                )
+
+                # Looking for common .NET strings
+                dotnet_signatures = [
+                    b'mscoree.dll',
+                    b'mscorlib',
+                    b'.NET Framework',
+                    b'System.Windows.Forms',
+                    b'System.Drawing'
+                ]
+
+                for sig in dotnet_signatures:
+                    if sig in content:
+                        self.const.pdebug(
+                            f"Found .NET signature: {sig}",
+                            class_name=self.class_name
+                        )
+                        return True
+            self.const.pdebug(
+                "No .NET signature found in binary.",
+                class_name=self.class_name
+            )
+            return False
+        except Exception as e:
+            self.const.pwarning(
+                f"Error checking if binary is .NET: {e}",
+                class_name=self.class_name
+            )
+            return False
+
+    def _prepend_correct_linux_runner_if_required(self, binary_path: str) -> Union[str, None]:
+        """
+        Prepend the correct runner to the binary path if required.
+        Detects and selects the appropriate interpreter for Windows executables on Linux/macOS.
+
+        Args:
+            binary_path (str): The path to the binary.
+
+        Returns:
+            str: The path to the binary with the correct runner, empty string on Windows,
+                or None if no suitable runner is found.
+        """
+        # No runner needed on Windows
+        if platform.system() == "Windows":
+            self.const.pdebug(
+                "No runner needed on Windows",
+                class_name=self.class_name
+            )
+            return ""
+
+        # For Linux or macOS systems
+        if platform.system() == "Linux" or platform.system() == "Darwin":
+            self.const.pdebug(
+                f"Detected platform: {platform.system()}",
+                class_name=self.class_name
+            )
+            # Check if the binary is a .NET application (better with mono)
+            is_dotnet_app = binary_path.lower(
+            ).endswith(
+                '.exe'
+            ) and self._is_dotnet_binary(binary_path)
+            self.const.pdebug(
+                f"Is .NET application: {is_dotnet_app}",
+                class_name=self.class_name
+            )
+
+            # Dictionary of runners with their detection commands
+            # Ordered by preference (will try in this order)
+            runners = {}
+            self.const.pdebug(
+                "Checking for available runners",
+                class_name=self.class_name
+            )
+
+            # For .NET applications, prioritize .NET-specific runners
+            if is_dotnet_app:
+                runners = {
+                    "mono": "mono ",  # Best for .NET applications
+                    "wine": "wine ",  # Fallback for .NET applications
+                    "crossover": "crossover ",  # Commercial Wine variant
+                    "proton": "proton run ",  # Valve's gaming-focused Wine fork
+                }
+            else:
+                # For non-.NET applications, prioritize general Windows runners
+                runners = {
+                    "wine": "wine ",  # Best general compatibility
+                    "crossover": "crossover ",  # Commercial Wine variant
+                    "proton": "proton run ",  # Gaming-focused
+                    "playonlinux": "playonlinux --run ",  # Wine frontend
+                    "bottles": "bottles-cli run ",  # Modern Wine manager
+                    "mono": "mono ",  # Last resort for non-.NET apps
+                }
+
+            self.const.pdebug(
+                f"Runners available: {', '.join(runners.keys())}",
+                class_name=self.class_name
+            )
+
+            # Check for each runner in order of preference
+            for runner, command in runners.items():
+                if self._is_bin_present(runner):
+                    self.const.pinfo(
+                        f"Using {runner} to run Windows executable",
+                        class_name=self.class_name
+                    )
+                    return command
+
+            # No suitable runner found
+            self.const.perror(
+                "No runner found for Linux or Mac. Please install wine, mono, crossover, or another Windows compatibility layer.",
+                class_name=self.class_name
+            )
+            return None
+
+        # Unsupported platform
+        self.const.perror(
+            f"Unsupported platform: {platform.system()}",
+            class_name=self.class_name
+        )
+        return None
+
     def _run_conversion_steps(self, input_file: str, output_file: str, image_format: str) -> int:
         """_summary_
         This function is the one that will run the different conversion steps that are required in order to achieve the desired format.
@@ -186,7 +346,16 @@ class MDIToTiff:
                     additional_text=f"Error: '{e}'"
                 )
                 return self.error
-        command = f"{self.bin_path} -source {input_file} -dest {step1} "
+        prepended_bin_path = self._prepend_correct_linux_runner_if_required(
+            self.bin_path
+        )
+        if prepended_bin_path is None:
+            self.const.perror(
+                "No suitable runner found for the binary.",
+                class_name=self.class_name
+            )
+            return self.error
+        command = f"{prepended_bin_path}{self.bin_path} -source {input_file} -dest {step1} "
         command += f"-log {self.const.log_file_location}"
         self.const.pdebug(
             f"Command: {command}",
