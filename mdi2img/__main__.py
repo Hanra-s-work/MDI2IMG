@@ -34,6 +34,6 @@ MI = Main(
     debug=_DEBUG_ENABLED,
     splash=_SPLASH
 )
-print(f"(mdi2img) MI = {MI}")
+MI.const.pdebug("Initialised MDI2IMG module", __name__, _CWD)
 status = MI.main()
 sys.exit(status)

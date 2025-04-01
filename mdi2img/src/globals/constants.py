@@ -95,29 +95,29 @@ class Constants:
             _func_name
         )
         # ---------------------------- Debug data ----------------------------
-        self.pdebug(
-            f"{_padding} Displaying variables located in the Constants class {_padding}",
-            _func_name
-        )
-        self.pdebug(f"self.env = {self.env}", _func_name)
-        self.pdebug(f"self.author = {self.author}", _func_name)
-        self.pdebug(f"self.debug = {self.debug}", _func_name)
-        self.pdebug(f"self.binary_name = {self.binary_name}", _func_name)
-        self.pdebug(f"self.in_directory = {self.in_directory}", _func_name)
-        self.pdebug(f"self.out_directory = {self.out_directory}", _func_name)
-        self.pdebug(f"self.out_format = {self.out_format}", _func_name)
-        self.pdebug(
-            f"self.temporary_folder = {self.temporary_folder}",
-            _func_name
-        )
-        self.pdebug(
-            f"self.temporary_img_folder = {self.temporary_img_folder}",
-            _func_name
-        )
-        self.pdebug(
-            f"self.log_file_location = {self.log_file_location}", _func_name
-        )
-        self.pdebug(f"self.binary_path = {self.binary_path}", _func_name)
+        # self.pdebug(
+        #     f"{_padding} Displaying variables located in the Constants class {_padding}",
+        #     _func_name
+        # )
+        # self.pdebug(f"self.env = {self.env}", _func_name)
+        # self.pdebug(f"self.author = {self.author}", _func_name)
+        # self.pdebug(f"self.debug = {self.debug}", _func_name)
+        # self.pdebug(f"self.binary_name = {self.binary_name}", _func_name)
+        # self.pdebug(f"self.in_directory = {self.in_directory}", _func_name)
+        # self.pdebug(f"self.out_directory = {self.out_directory}", _func_name)
+        # self.pdebug(f"self.out_format = {self.out_format}", _func_name)
+        # self.pdebug(
+        #     f"self.temporary_folder = {self.temporary_folder}",
+        #     _func_name
+        # )
+        # self.pdebug(
+        #     f"self.temporary_img_folder = {self.temporary_img_folder}",
+        #     _func_name
+        # )
+        # self.pdebug(
+        #     f"self.log_file_location = {self.log_file_location}", _func_name
+        # )
+        # self.pdebug(f"self.binary_path = {self.binary_path}", _func_name)
 
     @staticmethod
     def get_temp_folder(env: dict[str, str]) -> str:

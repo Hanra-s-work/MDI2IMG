@@ -13,7 +13,28 @@ from .img_to_tiff import MDIToTiff
 from .globals import constants as CONST
 from .convert_to_any import AVAILABLE_FORMATS, AVAILABLE_FORMATS_HELP
 
-DEBUG_RULES = ("--debug", "-d", "/d")
+DEBUG_RULES = ("--debug", "-debug", "/debug", "--d", "-d", "/d")
+
+HELP_RULES = ("--help", "--h", "--?", "-help", "-h", "-?", "/help", "/h", "/?")
+
+VERSION_RULES = ("--version", "--v", "-version", "-v", "/version", "/v")
+
+NO_SHOW_RULES = (
+    "--no-show", "-no-show", "/no-show",
+    "--noshow", "-noshow", "/noshow",
+    "--ns", "-ns", "/ns",
+    "--no_show", "-no_show", "/no_show"
+)
+
+DESTINATION_RULES = (
+    "--destination", "-destination", "/destination",
+    "--dest", "-dest", "/dest"
+)
+
+FORMAT_RULES = (
+    "--format", "-format", "/format",
+    "--f", "-f", "/f"
+)
 
 _CWD = os.path.dirname(os.path.abspath(__file__))
 
@@ -173,48 +194,57 @@ class Main:
         if self.argc == 0:
             self._help_section()
             sys.exit(self.error)
-        if self.argv[0].lower() in ("-h", "--help", "/?"):
-            self._help_section()
-            sys.exit(self.success)
-        if self.argv[0].lower() in ("-v", "--version", "/v"):
-            self._disp_version()
-            sys.exit(self.success)
         for index, item in enumerate(self.argv):
             arg = item.lower()
+            arg_start = arg.split("=")[0] if "=" in arg else arg
             is_path = os.path.exists(item)
             if skip_one is True:
                 skip_one = False
+                self.const.pdebug(
+                    f"Skipping argument '{item}'",
+                    class_name=self.class_name
+                )
                 continue
+            if arg in HELP_RULES:
+                self._help_section()
+                sys.exit(self.success)
+            if arg in VERSION_RULES:
+                self._disp_version()
+                sys.exit(self.success)
             if is_path is True and src_found is False:
                 self.src = item
                 src_found = True
+                self.const.pdebug(
+                    f"Source path found: {item}",
+                    class_name=self.class_name
+                )
                 continue
-            if is_path is True and src_found is True and self.dest_found is False:
-                self.dest = item
-                self.dest_found = True
-                continue
-            if arg in ("--destination", "-destination", "/destination"):
+            if (arg_start in DESTINATION_RULES and self.dest_found is False) or (is_path is True and src_found is True and self.dest_found is False):
                 path = ""
                 if "=" in item:
                     path = item.split("=")[1]
-                elif index < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                elif is_path is True:
+                    path = item
+                elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
                     path = self.argv[index + 1]
+                    self.const.pdebug(
+                        f"Argument '{self.argv[index + 1]}' found, using it as destination",
+                        class_name=self.class_name
+                    )
                     skip_one = True
                 else:
                     self.const.pcritical(
                         f"No destination path provided for the {item} argument, aborting!",
                         class_name=self.class_name
                     )
-                    sys.exit(self.error)
-                if os.path.exists(path) is True:
-                    self.dest = path
-                    self.dest_found = True
-                else:
-                    self.const.pcritical(
-                        f"The destination path '{path}' does not exist, aborting!",
-                        class_name=self.class_name
-                    )
-                    sys.exit(self.error)
+                    continue
+                self.dest = path
+                self.dest_found = True
+                self.const.pdebug(
+                    f"Destination path found: {self.dest}",
+                    class_name=self.class_name
+                )
+                continue
             if is_path is True and self.dest_found is True:
                 self.const.pwarning(
                     f"Argument '{item}' was not expected, ignoring it.",
@@ -223,25 +253,60 @@ class Main:
                 continue
             if arg in DEBUG_RULES:
                 self.debug = True
-                continue
-            if arg in ("--no-show", "-ns", "/ns"):
-                self.show = True
-                continue
-            if arg.startswith("--format"):
-                self.output_format = self._check_output_format(
-                    arg.split("=")[1]
+                self.const.update_debug(self.debug)
+                self.const.pdebug(
+                    "Debug mode enabled.",
+                    class_name=self.class_name
                 )
+                continue
+            if arg in NO_SHOW_RULES:
+                self.show = False
+                self.const.pdebug(
+                    "No show mode enabled.",
+                    class_name=self.class_name
+                )
+                continue
+            if arg_start in FORMAT_RULES:
+                chosen_format = ""
+                self.const.pdebug(
+                    f"Argument '{arg}' found, checking for format",
+                    class_name=self.class_name
+                )
+                if "=" in arg:
+                    chosen_format = arg.split("=")[1]
+                elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                    chosen_format = self.argv[index + 1]
+                    skip_one = True
+                    self.const.pdebug(
+                        f"Argument '{self.argv[index + 1]}' found, using it as format",
+                        class_name=self.class_name
+                    )
+                else:
+                    self.const.pcritical(
+                        f"No format provided for the {arg} argument, aborting!",
+                        class_name=self.class_name
+                    )
+                    continue
+                self.const.pdebug(
+                    f"Chosen format: {chosen_format}",
+                    class_name=self.class_name
+                )
+                self.output_format = self._check_output_format(chosen_format)
+                continue
+            self.const.pdebug(
+                f"Argument '{item}' was not expected, ignoring it.",
+                class_name=self.class_name
+            )
         if src_found is False:
             self.const.pcritical(
                 "No source path provided, aborting!",
                 class_name=self.class_name
             )
             sys.exit(self.error)
-        else:
-            self.const.pdebug(
-                f"Source path found: {self.src}",
-                class_name=self.class_name
-            )
+        self.const.pdebug(
+            "Arguments parsed.",
+            class_name=self.class_name
+        )
 
     def main(self) -> int:
         """_summary_
@@ -250,6 +315,7 @@ class Main:
         Returns:
             int: _description_: The return status of the call
         """
+        # Output values of given variables if debug is True
         if self.debug is True:
             self.const.update_debug(self.debug)
             for i in [
@@ -264,6 +330,7 @@ class Main:
                     f"Variable '{i[0]}' = '{i[1]}'",
                     class_name=self.class_name
                 )
+        # Check if the source is a folder
         if os.path.isdir(self.src) is True:
             self.const.pdebug(
                 "The provided source path is a folder.",
@@ -274,9 +341,22 @@ class Main:
                 self.dest,
                 self.output_format
             )
+        # Check if the source is a file
         if os.path.isfile(self.src) is True:
             self.const.pdebug(
                 "The provided source path is a file",
+                class_name=self.class_name
+            )
+            self.const.pdebug(
+                f"Source file: {self.src}",
+                class_name=self.class_name
+            )
+            self.const.pdebug(
+                f"Destination file: {self.dest}",
+                class_name=self.class_name
+            )
+            self.const.pdebug(
+                f"Output format: {self.output_format}",
                 class_name=self.class_name
             )
             return self.mdi_to_tiff_initialised.convert(
@@ -284,8 +364,9 @@ class Main:
                 self.dest,
                 self.output_format
             )
+        # error output if the source is not a file or a folder
         self.const.pdebug(
-            "The provided path does npt correspond to a known type.",
+            "The provided path does not correspond to a known type.",
             class_name=self.class_name
         )
         self.const.pcritical(

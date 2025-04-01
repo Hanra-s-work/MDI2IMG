@@ -100,13 +100,13 @@ class ChangeImageFormat:
     """
 
     def __init__(self, constants: Constants, success: int = SUCCESS, error: int = ERROR) -> None:
-        self.success = success
         self.error = error
+        self.success = success
+        self.class_name = self.__class__.__name__
         self.const: Constants = constants
         self.disp: Disp = self.const.dttyi
-        self.class_name = self.__class__.__name__
 
-    def _check_output_file(self, output_file: str, img_format: str) -> Union[str, List[str]]:
+    def check_output_file(self, output_file: str, img_format: str) -> Union[str, List[str]]:
         """_summary_
             This is a function that will analyse the name of the output file and return the path and temporary path (if output format is not tiff)
 
@@ -118,17 +118,57 @@ class ChangeImageFormat:
             Union[str, List[str,str]: _description_: A list is returned with the paths of the output files if a second conversion step is required. Otherwise, only the final path is returned.
         """
         img_format = img_format.lower()
+        self.const.pdebug(
+            f"img_format: '{img_format}'",
+            class_name=self.class_name
+        )
+        self.const.pdebug(
+            f"output_file: '{output_file}'",
+            class_name=self.class_name
+        )
         # Get the extension of the file
         output_file_format = output_file.split(".")[-1].lower()
+        self.const.pdebug(
+            f"output_file_format: '{output_file_format}'",
+            class_name=self.class_name
+        )
         # Get the name of the file
         output_file_name = output_file.replace("\\", "/").split("/")[-1]
+        self.const.pdebug(
+            f"output_file_name (step1): '{output_file_name}'",
+            class_name=self.class_name
+        )
         output_file_name = output_file_name.split(".")
+        self.const.pdebug(
+            f"output_file_name (step2): '{output_file_name}'",
+            class_name=self.class_name
+        )
         output_file_name.pop(-1)
+        self.const.pdebug(
+            f"output_file_name (step3): '{output_file_name}'",
+            class_name=self.class_name
+        )
         output_file_name = ".".join(output_file_name)
+        self.const.pdebug(
+            f"output_file_name (step4): '{output_file_name}'",
+            class_name=self.class_name
+        )
         # Get the path of the file
         output_file_path = output_file.replace("\\", "/").split("/")
+        self.const.pdebug(
+            f"output_file_path (step1): '{output_file_path}'",
+            class_name=self.class_name
+        )
         output_file_path.pop(-1)
+        self.const.pdebug(
+            f"output_file_path (step2): '{output_file_path}'",
+            class_name=self.class_name
+        )
         output_file_path = "/".join(output_file_path)
+        self.const.pdebug(
+            f"output_file_path (step3): '{output_file_path}'",
+            class_name=self.class_name
+        )
 
         if output_file_format != img_format:
             warning_msg = "The output format and the format in the file name do not match! "
@@ -141,8 +181,12 @@ class ChangeImageFormat:
                 img_format = output_file_format
             else:
                 output_file_format = img_format
+            self.const.pdebug(
+                f"output_file_format: {output_file_format}",
+                class_name=self.class_name
+            )
             self.const.pinfo(
-                f"The format is now {img_format}",
+                f"The exit format is now {img_format}",
                 class_name=self.class_name
             )
         if img_format != "tiff" and output_file_format != "tiff":
@@ -150,7 +194,31 @@ class ChangeImageFormat:
             temp_export += f"{output_file_name}.tiff"
             final_export = f"{output_file_path}/"
             final_export += f"{output_file_name}.{img_format}"
+            self.const.pdebug(
+                f"temp_export: {temp_export}",
+                class_name=self.class_name
+            )
+            self.const.pdebug(
+                f"final_export: {final_export}",
+                class_name=self.class_name
+            )
+            self.const.pinfo(
+                f"Temporary export path: {temp_export}",
+                class_name=self.class_name
+            )
+            self.const.pinfo(
+                f"Final export path: {final_export}",
+                class_name=self.class_name
+            )
             return [temp_export, final_export]
+        self.const.pinfo(
+            f"Temporary export path: {output_file}",
+            class_name=self.class_name
+        )
+        self.const.pinfo(
+            f"Final export path: {output_file}",
+            class_name=self.class_name
+        )
         return output_file
 
     def _get_new_name(self, image: str = "", img_format: str = "") -> str:

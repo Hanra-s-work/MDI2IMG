@@ -16,14 +16,22 @@ class MDIToTiff:
         :param error: The exit code of a failed conversion
     """
 
-    def __init__(self, binary_name: Union[str, CONST.Constants] = "", success: int = 0, error: int = 1, skipped: int = CONST.SKIPPED) -> None:
+    def __init__(self, binary_name: Union[str, CONST.Constants] = "", success: int = 0, error: int = 1, skipped: int = CONST.SKIPPED, output_format: str = "default", debug: bool = False) -> None:
         self.error = error
         self.success = success
         self.skipped = skipped
+        self.debug = debug
         if callable(binary_name) is False:
             self.const = binary_name
         else:
-            self.const = CONST.Constants(binary_name)
+            self.const = CONST.Constants(
+                binary_name=binary_name,
+                output_format=output_format,
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                error=self.error,
+                success=self.success,
+                debug=self.debug
+            )
         self.bin_path = self.const.binary_path
         # ------------------------ Store the class name ------------------------
         self.class_name = self.__class__.__name__
@@ -141,15 +149,62 @@ class MDIToTiff:
         Returns:
             int: _description_: The status of the execution.
         """
+        self.const.pdebug(
+            "Running conversion steps",
+            class_name=self.class_name
+        )
         if isinstance(output_file, list) is True:
             step1 = output_file[0]
             step2 = output_file[1]
         else:
             step1 = output_file
             step2 = None
+        self.const.pdebug(
+            f"Step 1: {step1}",
+            class_name=self.class_name
+        )
+        self.const.pdebug(
+            f"Step 2: {step2}",
+            class_name=self.class_name
+        )
+        # check binary permissions
+        if os.access(self.bin_path, os.X_OK) is False:
+            self.const.pwarning(
+                f"Binary '{self.bin_path}' is not executable, granting permissions.",
+                class_name=self.class_name
+            )
+            try:
+                os.chmod(self.bin_path, 0o755)
+                self.const.psuccess(
+                    f"Permissions granted to '{self.bin_path}'",
+                    class_name=self.class_name
+                )
+            except os.error as e:
+                self.const.perror(
+                    f"Error while granting permissions to '{self.bin_path}'",
+                    class_name=self.class_name,
+                    additional_text=f"Error: '{e}'"
+                )
+                return self.error
         command = f"{self.bin_path} -source {input_file} -dest {step1} "
         command += f"-log {self.const.log_file_location}"
-        exit_code = os.system(command)
+        self.const.pdebug(
+            f"Command: {command}",
+            class_name=self.class_name
+        )
+        try:
+            exit_code = os.system(command)
+            self.const.pdebug(
+                f"(os.system) Exit code: {exit_code}",
+                class_name=self.class_name
+            )
+        except os.error as e:
+            self.const.perror(
+                f"Error while running the command: '{command}'",
+                class_name=self.class_name,
+                additional_text=f"Error: '{e}'"
+            )
+            exit_code = self.error
         if exit_code != self.success:
             return exit_code
         if step2 is not None:
@@ -167,18 +222,39 @@ class MDIToTiff:
         Returns:
             int: _description_: The status of the convertion (success:int  or error:int)
         """
+        self.const.pdebug("Converting file", class_name=self.class_name)
         if self.session_active is False and self.bin_path is None:
             self.const.err_binary_path_not_found()
+            self.const.pdebug(
+                "Binary path not found, aborting conversion.",
+                class_name=self.class_name
+            )
             return self.error
-        if os.path.exists(input_file) is False:
+        self.const.pdebug(
+            f"Input file: {input_file}",
+            class_name=self.class_name
+        )
+        self.const.pdebug(
+            f"Output file: {output_file}",
+            class_name=self.class_name
+        )
+        self.const.pdebug(
+            f"Image format: {img_format}",
+            class_name=self.class_name
+        )
+        if os.path.isfile(input_file) is False:
             self.const.err_item_not_found(
                 directory=False,
                 item_type="input",
                 path=input_file,
                 critical=True
             )
+            self.const.pdebug(
+                f"'{input_file}' does not exist, aborting conversion.",
+                class_name=self.class_name
+            )
             return self.error
-        if os.path.exists(output_file) is True:
+        if os.path.isfile(output_file) is True:
             self.const.pwarning(
                 f"'{output_file}' already exists, skipping.",
                 class_name=self.class_name
@@ -186,14 +262,26 @@ class MDIToTiff:
             if self.session_active is True:
                 return self.skipped
             return self.success
-        checked_output_file = self.cifi._check_output_file(
+        self.const.pdebug(
+            f"'{input_file}' exists, proceeding with conversion.",
+            class_name=self.class_name
+        )
+        checked_output_file = self.cifi.check_output_file(
             output_file,
             img_format
+        )
+        self.const.pdebug(
+            f"Checked output file: {checked_output_file}",
+            class_name=self.class_name
         )
         exit_code = self._run_conversion_steps(
             input_file,
             checked_output_file,
             img_format
+        )
+        self.const.pdebug(
+            f"Exit code: {exit_code}",
+            class_name=self.class_name
         )
         if exit_code == self.success:
             if self.session_active is False:
