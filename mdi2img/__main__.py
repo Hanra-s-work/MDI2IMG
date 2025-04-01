@@ -7,7 +7,11 @@
 
 import os
 import sys
-from src.main import Main
+
+try:
+    from src.main import Main
+except ImportError:
+    from .src.main import Main
 
 _ERROR = 1
 _SUCCESS = 0
@@ -26,5 +30,6 @@ MI = Main(
     debug=_DEBUG_ENABLED,
     splash=_SPLASH
 )
+print(f"(mdi2img) MI = {MI}")
 status = MI.main()
 sys.exit(status)

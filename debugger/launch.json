@@ -1,0 +1,134 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Raw library with file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument and file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with file",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument and file",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with help argument",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "--help"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d"
+        },
+        {
+            "name": "Python Debugger: Raw library with custom Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        },
+        {
+            "name": "Python Debugger: Current File with custom Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        },
+        {
+            "name": "Python Debugger current file: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}"
+        },
+        {
+            "name": "Python Debugger: Module with file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument and file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Module with file",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument and file",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+        },
+        {
+            "name": "Python Debugger: Module with help argument",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "--help"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d"
+        },
+        {
+            "name": "Python Debugger: Module with custom Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        }
+    ]
+}

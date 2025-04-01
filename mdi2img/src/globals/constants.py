@@ -10,7 +10,7 @@ import inspect
 import platform
 from typing import Union
 from random import randint
-from display_tty import Disp, TOML_CONF
+from display_tty import Disp, TOML_CONF, LoggerColours
 from . import logo as LOG
 
 SUCCESS = 0
@@ -23,7 +23,6 @@ SPLASH = SELECTED_LIST[SPLASH_NAME]
 
 __version__ = "1.0.0"
 __author__ = "(c) Henry Letellier"
-
 
 _CLASS_NAME = "Constants"
 
@@ -53,14 +52,21 @@ class Constants:
             save_to_file=False,
             file_name="",
             file_descriptor=None,
-            debug=self.debug,
+            debug=True,  # self.debug,
             logger="mdi2img"
+        )
+        self.level_success = 200
+        self.dttyi.add_custom_level(
+            level=self.level_success,
+            name="SUCCESS",
+            colour_text=LoggerColours.GREEN,
+            colour_bg=LoggerColours.BLACK
         )
         self.pdebug(
             f"{_padding} Locating temporary folder {_padding}",
             _func_name
         )
-        self.temporary_folder = self._get_temp_folder(self.env)
+        self.temporary_folder = self.get_temp_folder(self.env)
         self.temporary_img_folder = f"{self.temporary_folder}/mdi_to_img_temp"
         self.log_file_location = f"{self.temporary_folder}/mdi2tiff.log"
         self.pdebug(
@@ -99,8 +105,10 @@ class Constants:
             f"self.log_file_location = {self.log_file_location}", _func_name
         )
         self.pdebug(f"self.binary_path = {self.binary_path}", _func_name)
+        self.psuccess("This is a success message", _func_name)
 
-    def _get_temp_folder(self, env: dict[str, str]) -> str:
+    @staticmethod
+    def get_temp_folder(env: dict[str, str]) -> str:
         """_summary_
         Check the computer environement to see if the wished key is present.
 
@@ -189,6 +197,12 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
         self.dttyi.log_error(string, f"{class_name}::{func_name}")
 
     def pwarning(self, string: str = "", func_name: str = "pwarning", class_name: str = _CLASS_NAME) -> None:
@@ -200,6 +214,12 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
         self.dttyi.log_warning(string, f"{class_name}::{func_name}")
 
     def pcritical(self, string: str = "", func_name: str = "pcritical", class_name: str = _CLASS_NAME) -> None:
@@ -211,6 +231,12 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
         self.dttyi.log_critical(string, f"{class_name}::{func_name}")
 
     def psuccess(self, string: str = "", func_name: str = "psuccess", class_name: str = _CLASS_NAME) -> None:
@@ -222,8 +248,17 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
-        self.dttyi.logger.success(
-            string, f"{class_name}::{func_name}")
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
+        self.dttyi.log_custom_level(
+            self.level_success,
+            string,
+            f"{class_name}::{func_name}"
+        )
 
     def pinfo(self, string: str = "", func_name: str = "pinfo", class_name: str = _CLASS_NAME) -> None:
         """_summary_
@@ -234,6 +269,12 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
         self.dttyi.log_info(string, f"{class_name}::{func_name}")
 
     def pdebug(self, string: str = "", func_name: str = "pdebug", class_name: str = _CLASS_NAME) -> None:
@@ -245,6 +286,12 @@ class Constants:
             func_name (str, optional): _description_. Defaults to "perror".
             class_name (str, optional): _description_. Defaults to the value contained in _CLASS_NAME.
         """
+        if isinstance(func_name, str) is False or func_name is None:
+            _func_name = inspect.currentframe()
+            if _func_name.f_back is not None:
+                func_name = _func_name.f_back.f_code.co_name
+            else:
+                func_name = _func_name.f_code.co_name
         if self.debug is True:
             self.dttyi.log_debug(string, f"{class_name}::{func_name}")
 
@@ -280,3 +327,6 @@ class Constants:
         msg = f"Binary path: '{self.binary_path}' was not found."
         msg += "\nAborting operations."
         self.pcritical(msg, _func_name)
+
+
+TMP_IMG_FOLDER = Constants().temporary_img_folder

@@ -32,7 +32,10 @@ class Main:
         self.error = error
         self.binary_name = "MDI2TIF.EXE"
         self.debug = debug
-        self._check_args()
+        for i in argv:
+            if i.lower() in DEBUG_RULES:
+                self.debug = True
+                break
         self.show = show
         self.src = ""
         self.dest = ""
@@ -46,6 +49,7 @@ class Main:
             self.cwd,
             self.debug
         )
+        self._check_args()
         if self.dest_found is False:
             self.dest = self.const.temporary_img_folder
         self.mdi_to_tiff_initialised: MDIToTiff = MDIToTiff(
@@ -101,7 +105,7 @@ class Main:
         Display the help section of the program
         """
         print("USAGE:")
-        msg = f"\t{argv[0]} <<-h>|<-v>|<SRC>> [DEST]"
+        msg = f"\t{argv[0]} <<-h>|<-v>|<SRC>> [DEST]|[--destination <DEST>] "
         msg += "[--debug] [--no-show] [--format=<format>]"
         print(msg)
         print()
@@ -109,30 +113,27 @@ class Main:
         print("When exporting/viewing/saving images, the default output format is tiff.")
         print("Use the --format flag to change the export format.")
         msg = "When no destination is specified, "
-        msg += f"the default one is '{CONST.TMP_IMG_FOLDER}'"
+        # msg += f"the default one is '{CONST.TMP_IMG_FOLDER}'"
+        msg += f"the default one is '{self.const.temporary_img_folder}'"
         print(msg)
         print()
         print("ARGUMENTS:")
         print(
             "\tINFO: '<argument>' --> required, '[argument]' --> optional '|' --> one or the other"
         )
-        print("\t<SRC>            \tMust be either:")
-        print("\t                 \t  - a path to an mdi file")
-        print("\t                 \t  - a path to a folder containing mdi files")
-        print("\t<-h>|<--help>    \tDisplay this help section and exit.")
-        print("\t<-v>|<--version> \tDisplay the program's version and exit.")
-        print("\t[DEST]           \tMust be either:")
-        print("\t                 \t  - the name of the output file")
-        print("\t                 \t  - the name of the output folder")
+        print("\t<SRC>                             \tMust be either:")
+        print("\t                                  \t  - a path to an mdi file")
+        print("\t                                  \t  - a path to a folder containing mdi files")
+        print("\t<-h>|<--help>                     \tDisplay this help section and exit.")
         print(
-            "\t[--debug|-d]         \tThis option will display additional information about what the program is doing."
+            "\t<-v>|<--version>                  \tDisplay the program's version and exit."
         )
-        print(
-            "\t[--no-show|-ns]      \tThis option will instruct the program not to display the images once they were converted"
-        )
-        print(
-            "\t[--format=<format>]  \tThis option allows you to change the default output format (tiff)"
-        )
+        print("\t[DEST] | [--destination=<DEST>]   \tMust be either:")
+        print("\t                                  \t  - the name of the output file")
+        print("\t                                  \t  - the name of the output folder")
+        print("\t[--debug|-d]                      \tThis option will display additional information about what the program is doing.")
+        print("\t[--no-show|-ns]                   \tThis option will instruct the program not to display the images once they were converted")
+        print("\t[--format=<format>]               \tThis option allows you to change the default output format (tiff)")
         print()
         print("ABOUT:")
         print(f"This program was created by {CONST.__author__}")
@@ -154,6 +155,7 @@ class Main:
         """
         src_found = False
         self.dest_found = False
+        skip_one = False
         if self.argc == 0:
             self._help_section()
             sys.exit(self.error)
@@ -163,21 +165,44 @@ class Main:
         if self.argv[0].lower() in ("-v", "--version", "/v"):
             self._disp_version()
             sys.exit(self.success)
-        for i in self.argv:
-            arg = i.lower()
-            is_path = os.path.exists(i)
+        for index, item in enumerate(self.argv):
+            arg = item.lower()
+            is_path = os.path.exists(item)
+            if skip_one is True:
+                skip_one = False
+                continue
             if is_path is True and src_found is False:
-                self.src = i
+                self.src = item
                 src_found = True
                 continue
             if is_path is True and src_found is True and self.dest_found is False:
-                self.dest = i
+                self.dest = item
                 self.dest_found = True
                 continue
+            if arg in ("--destination", "-destination", "/destination"):
+                path = ""
+                if "=" in item:
+                    path = item.split("=")[1]
+                elif index < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                    path = self.argv[index + 1]
+                    skip_one = True
+                else:
+                    self.const.pcritical(
+                        f"No destination path provided for the {item} argument, aborting!"
+                    )
+                    sys.exit(self.error)
+                if os.path.exists(path) is True:
+                    self.dest = path
+                    self.dest_found = True
+                else:
+                    self.const.pcritical(
+                        f"The destination path '{path}' does not exist, aborting!"
+                    )
+                    sys.exit(self.error)
             if is_path is True and self.dest_found is True:
-                IDISP.logger.warning(
+                self.const.pwarning(
                     "(mdi2img) Argument '%s' was not expected, ignoring it.",
-                    f"{i}"
+                    f"{item}"
                 )
                 continue
             if arg in DEBUG_RULES:
