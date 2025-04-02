@@ -1,10 +1,3 @@
-##
-# EPITECH PROJECT, 2024
-# MDI2IMG
-# File description:
-# logo.py
-##
-
 """_summary_
   This file contains a series of ascii art logo's of the app's name.
 """

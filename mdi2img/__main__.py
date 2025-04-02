@@ -1,9 +1,7 @@
-##
-# EPITECH PROJECT, 2024
-# MDI2IMG (Workspace)
-# File description:
-# __main__.py
-##
+"""
+    This is the file that will be executed when the user runs the module from the command line.
+    It will import the Main class from the src.main module and run the main function.
+"""
 
 import os
 import sys

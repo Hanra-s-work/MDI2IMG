@@ -1,10 +1,3 @@
-##
-# EPITECH PROJECT, 2024
-# MDI2IMG
-# File description:
-# __init__.py
-##
-
 """
 File in charge of linking the different elements of the program so that it can be easily imported by the root of the program
 """

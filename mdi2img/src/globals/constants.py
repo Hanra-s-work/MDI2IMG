@@ -1,10 +1,8 @@
-##
-# EPITECH PROJECT, 2024
-# MDI2IMG (Workspace)
-# File description:
-# constants.py
-##
-
+"""
+This module contains the Constants class, which is used to store global variables and methods that are used across different classes in the project.
+It also provides utility functions for logging and error handling.
+It is designed to be used as a singleton, ensuring that there is only one instance of the Constants class throughout the application.
+"""
 import os
 import inspect
 import platform

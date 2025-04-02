@@ -1,9 +1,6 @@
-##
-# EPITECH PROJECT, 2024
-# MDI2IMG
-# File description:
-# mdi_to_img.py
-##
+"""
+    File in charge of linking the different elements of the program
+"""
 
 import tkinter as tk
 from window_asset_tkinter import WindowAsset
