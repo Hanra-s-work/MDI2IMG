@@ -4,7 +4,7 @@
 FROM busybox:1.37.0-uclibc AS binary_base
 
 # Using the official python image as the base image in the container.
-FROM python:3.10.16-slim-bookworm
+FROM python:3.13.2-slim-bookworm
 
 # Setting the DEBIAN_FRONTEND noninteractive environment variable to avoid any interactive prompts during package installation or runtime.
 ENV DEBIAN_FRONTEND=noninteractive
