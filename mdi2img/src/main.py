@@ -182,11 +182,23 @@ class Main:
             str: _description_: The format after the check.
         """
         data = output.lower()
+        if data.startswith("'") or data.startswith('"'):
+            data = data[1:]
+            self.const.pdebug(
+                "Cleaning format: removing starting quote",
+                class_name=self.class_name
+            )
+        if data.endswith("'") or data.endswith('"'):
+            data = data[:-1]
+            self.const.pdebug(
+                "Cleaning format: removing ending quote",
+                class_name=self.class_name
+            )
         if data in self.available_formats:
             return data
-        IDISP.logger.warning(
-            "(mdi2img) The format '%s' is not supported, using the default format.",
-            f"{data}"
+        self.const.pwarning(
+            f"The format '{data}' is not supported, using the default format.",
+            class_name=self.class_name
         )
         return self.output_format
 
@@ -367,11 +379,15 @@ class Main:
                 )
                 if "=" in arg:
                     chosen_format = arg.split("=")[1]
+                    self.const.pdebug(
+                        f"Found format '{chosen_format}'",
+                        class_name=self.class_name
+                    )
                 elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
                     chosen_format = self.argv[index + 1]
                     skip_one = True
                     self.const.pdebug(
-                        f"Argument '{self.argv[index + 1]}' found, using it as format",
+                        f"Found format '{chosen_format}'",
                         class_name=self.class_name
                     )
                 else:
