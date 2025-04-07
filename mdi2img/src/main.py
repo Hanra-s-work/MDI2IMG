@@ -8,7 +8,6 @@ import sys
 from typing import Tuple
 
 from sys import argv
-from display_tty import IDISP
 
 from .img_to_tiff import MDIToTiff
 from .globals import constants as CONST
@@ -294,10 +293,10 @@ class Main:
                 self._disp_version()
                 sys.exit(self.success)
             if is_path is True and src_found is False:
-                self.src = item
+                self.src = cleaned_item
                 src_found = True
                 self.const.pdebug(
-                    f"Source path found: {item}",
+                    f"Source path found: {self.src}",
                     class_name=self.class_name
                 )
                 continue
@@ -439,6 +438,37 @@ class Main:
                     f"Variable '{i[0]}' = '{i[1]}'",
                     class_name=self.class_name
                 )
+        # If the destination path is empty, set the source path and update the extension.
+        if len(self.dest) == 0:
+            path = self.src
+            if "." in path:
+                cut_data = path.split(".")
+                self.const.pdebug(
+                    f"Cut data (step1): {cut_data}",
+                    class_name=self.class_name
+                )
+                removed = cut_data.pop(-1)
+                self.const.pdebug(
+                    f"Cut data (step2): {cut_data}, poped info: {removed}",
+                    class_name=self.class_name
+                )
+                cut_data.append("tiff")
+                self.const.pdebug(
+                    f"Cut data (step3): {cut_data}",
+                    class_name=self.class_name
+                )
+                path = ".".join(cut_data)
+                self.const.pdebug(
+                    f"Cut data (step4): {path}",
+                    class_name=self.class_name
+                )
+            else:
+                path = f"{path}.tiff"
+            self.dest = path
+            self.const.pdebug(
+                f"Destination path not provided, using '{self.dest}'",
+                class_name=self.class_name
+            )
         # Check if the source is a folder
         if os.path.isdir(self.src) is True:
             self.const.pdebug(

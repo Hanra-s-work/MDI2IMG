@@ -320,11 +320,11 @@ class MDIToTiff:
             step1 = output_file
             step2 = None
         self.const.pdebug(
-            f"Step 1: {step1}",
+            f"Step 1 (pending...): {step1}",
             class_name=self.class_name
         )
         self.const.pdebug(
-            f"Step 2: {step2}",
+            f"Step 2 (pending...): {step2}",
             class_name=self.class_name
         )
         # check binary permissions
