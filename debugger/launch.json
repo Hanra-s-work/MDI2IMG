@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Raw library with file and format",
+            "name": "Python Debugger: Raw library with file, destination and format",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
@@ -13,12 +13,28 @@
             "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
         },
         {
-            "name": "Python Debugger: Raw library with debug argument and file and format",
+            "name": "Python Debugger: Raw library with debug argument, file, destination and format",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_goro_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_goro_stand.png' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with file and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_hiro_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_hiro_stand.png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_ichigo_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_ichigo_stand.png'"
         },
         {
             "name": "Python Debugger: Raw library with file",
@@ -26,15 +42,31 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+            "args": "'${workspaceFolder}/sample_images/mdi/C_ikuno_stand.mdi'"
         },
         {
-            "name": "Python Debugger: Raw library with debug argument and file",
+            "name": "Python Debugger: Raw library with debug argument and file ",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_kokoro_stand.mdi'"
+        },
+        {
+            "name": "Python Debugger: Raw library with file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_miku_stand.mdi' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_mitsuru_stand.mdi' --format='png'"
         },
         {
             "name": "Python Debugger: Raw library with help argument",
@@ -80,7 +112,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+            "args": "'${workspaceFolder}/sample_images/mdi/C_zero_two_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_zero_two_stand.png' --format='png'"
         },
         {
             "name": "Python Debugger: Module with debug argument and file and format",
@@ -88,7 +120,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png' --format='png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_zorome_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_zorome_stand.png' --format='png'"
         },
         {
             "name": "Python Debugger: Module with file",
@@ -96,7 +128,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+            "args": "'${workspaceFolder}/sample_images/mdi/9_s_Model_Franxx.mdi' --destination='${workspaceFolder}/sample_images/out/9_s_Model_Franxx.png'"
         },
         {
             "name": "Python Debugger: Module with debug argument and file",
@@ -104,7 +136,39 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi/C_futoshi_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_futoshi_stand.png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_argentea.mdi' --destination='${workspaceFolder}/sample_images/out/C_argentea.png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with file",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_chlorophytum.mdi'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument and file ",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_delphinium.mdi'"
+        },
+        {
+            "name": "Python Debugger: Raw library with file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "'${workspaceFolder}/sample_images/mdi/C_genista.mdi' --format='png'"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/C_strelizia.mdi' --format='png'"
         },
         {
             "name": "Python Debugger: Module with help argument",
