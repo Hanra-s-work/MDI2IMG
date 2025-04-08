@@ -319,6 +319,15 @@ class MDIToTiff:
         else:
             step1 = output_file
             step2 = None
+        if image_format == "default":
+            if step2 is not None:
+                image_format = step2.split(".")[-1]
+            else:
+                image_format = step1.split(".")[-1]
+        self.const.pdebug(
+            f"Image format: {image_format}",
+            class_name=self.class_name
+        )
         self.const.pdebug(
             f"Step 1 (pending...): {step1}",
             class_name=self.class_name
