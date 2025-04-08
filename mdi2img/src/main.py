@@ -5,9 +5,9 @@
 
 import os
 import sys
+from typing import Tuple
 
 from sys import argv
-from display_tty import IDISP
 
 from .img_to_tiff import MDIToTiff
 from .globals import constants as CONST
@@ -110,6 +110,66 @@ class Main:
             print(f"Splash name: '{CONST.SPLASH_NAME}'")
         print("Welcome to Mdi2Img")
 
+    def _sanitize_path(self, risky_path: str, check_presence: bool = True) -> Tuple[str, bool]:
+        """_summary_
+
+        Args:
+            risky_path (str): _description_: The path to be sanitized.
+            check_presence (bool, optional): _description_: Do a multi prong approche for checking the presence of the path. Defaults to True.
+        Returns:
+            str: _description_
+        """
+        cleaned_path = risky_path
+        if risky_path.startswith("'") or risky_path.startswith('"'):
+            cleaned_path = cleaned_path[1:]
+            self.const.pdebug("Cleaning path: removing starting quote")
+        if risky_path.endswith("'") or risky_path.endswith('"'):
+            cleaned_path = cleaned_path[:-1]
+            self.const.pdebug("Cleaning path: removing ending quote")
+        if check_presence:
+            if os.path.exists(cleaned_path) or os.path.isfile(cleaned_path) or os.path.isdir(cleaned_path):
+                return [cleaned_path, True]
+            cleaned_path2 = cleaned_path.replace("\\", "/")
+            self.const.pdebug(
+                f"cleaned_path2: {cleaned_path2}",
+                class_name=self.class_name
+            )
+            if os.path.exists(cleaned_path2) or os.path.isfile(cleaned_path2) or os.path.isdir(cleaned_path2):
+                self.const.pdebug(
+                    f"cleaned_path is a path: {cleaned_path2}, is_path: True",
+                    class_name=self.class_name
+                )
+                return [cleaned_path2, True]
+            cleaned_path_stripped = cleaned_path2.strip()
+            self.const.pdebug(
+                f"cleaned_path_stripped: {cleaned_path_stripped}",
+                class_name=self.class_name
+            )
+            if os.path.exists(cleaned_path_stripped) or os.path.isfile(cleaned_path_stripped) or os.path.isdir(cleaned_path_stripped):
+                self.const.pdebug(
+                    f"cleaned_path is a path: {cleaned_path}, is_path: True",
+                    class_name=self.class_name
+                )
+                return [cleaned_path_stripped, True]
+        return [cleaned_path, os.path.exists(cleaned_path)]
+
+    def _is_a_valid_path_structure(self, unsure_path: str) -> bool:
+        """_summary_
+        Check if the path is a valid structure.
+        This function will check if the path is a valid structure and if it is a valid path.
+        It will return True if the path is a valid structure and False if it is not.
+
+        Args:
+            path (str): _description_: The path to be checked.
+        Returns:
+            bool: _description_: True if the path is a valid structure, False if it is not.
+        """
+        try:
+            if os.path.isabs(unsure_path) or os.path.relpath(unsure_path):
+                return True
+        except ValueError:
+            return False
+
     def _check_output_format(self, output: str) -> str:
         """_summary_
         Check the output format provided by the user and return it if correct.
@@ -121,11 +181,23 @@ class Main:
             str: _description_: The format after the check.
         """
         data = output.lower()
+        if data.startswith("'") or data.startswith('"'):
+            data = data[1:]
+            self.const.pdebug(
+                "Cleaning format: removing starting quote",
+                class_name=self.class_name
+            )
+        if data.endswith("'") or data.endswith('"'):
+            data = data[:-1]
+            self.const.pdebug(
+                "Cleaning format: removing ending quote",
+                class_name=self.class_name
+            )
         if data in self.available_formats:
             return data
-        IDISP.logger.warning(
-            "(mdi2img) The format '%s' is not supported, using the default format.",
-            f"{data}"
+        self.const.pwarning(
+            f"The format '{data}' is not supported, using the default format.",
+            class_name=self.class_name
         )
         return self.output_format
 
@@ -195,9 +267,18 @@ class Main:
             self._help_section()
             sys.exit(self.error)
         for index, item in enumerate(self.argv):
+            self.const.pdebug(
+                f"Checking argument '{item}'",
+                class_name=self.class_name
+            )
             arg = item.lower()
             arg_start = arg.split("=")[0] if "=" in arg else arg
-            is_path = os.path.exists(item)
+            cleaned_item, is_path = self._sanitize_path(item, True)
+            self.const.pdebug(
+                f"Argument {item}, argument type = {type(item)}, cleaned_item: {cleaned_item}, is a path: {is_path}",
+                class_name=self.class_name
+            )
+            print("Buffer print")
             if skip_one is True:
                 skip_one = False
                 self.const.pdebug(
@@ -212,21 +293,44 @@ class Main:
                 self._disp_version()
                 sys.exit(self.success)
             if is_path is True and src_found is False:
-                self.src = item
+                self.src = cleaned_item
                 src_found = True
                 self.const.pdebug(
-                    f"Source path found: {item}",
+                    f"Source path found: {self.src}",
                     class_name=self.class_name
                 )
                 continue
             if (arg_start in DESTINATION_RULES and self.dest_found is False) or (is_path is True and src_found is True and self.dest_found is False):
                 path = ""
                 if "=" in item:
+                    # Do not check for the presence of the path in the directory, because it is not supposed to exist yet
                     path = item.split("=")[1]
+                    path, is_path = self._sanitize_path(path, True)
+                    if self._is_a_valid_path_structure(path) is False:
+                        self.const.pcritical(
+                            f"Argument '{path}' is not a valid path structure, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
                 elif is_path is True:
-                    path = item
+                    # Do not check for the presence of the path in the directory, because it is not supposed to exist yet
+                    path = cleaned_item
+                    if self._is_a_valid_path_structure(path) is False:
+                        self.const.pcritical(
+                            f"Argument '{path}' is not a valid path structure, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
                 elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                    # Do not check for the presence of the path in the directory, because it is not supposed to exist yet
                     path = self.argv[index + 1]
+                    path, is_path = self._sanitize_path(path, True)
+                    if self._is_a_valid_path_structure(path) is False:
+                        self.const.pcritical(
+                            f"Argument '{path}' is not a valid path structure, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
                     self.const.pdebug(
                         f"Argument '{self.argv[index + 1]}' found, using it as destination",
                         class_name=self.class_name
@@ -234,7 +338,7 @@ class Main:
                     skip_one = True
                 else:
                     self.const.pcritical(
-                        f"No destination path provided for the {item} argument, aborting!",
+                        f"No destination path provided for the {item} argument, skipping argument!",
                         class_name=self.class_name
                     )
                     continue
@@ -274,11 +378,15 @@ class Main:
                 )
                 if "=" in arg:
                     chosen_format = arg.split("=")[1]
+                    self.const.pdebug(
+                        f"Found format '{chosen_format}'",
+                        class_name=self.class_name
+                    )
                 elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
                     chosen_format = self.argv[index + 1]
                     skip_one = True
                     self.const.pdebug(
-                        f"Argument '{self.argv[index + 1]}' found, using it as format",
+                        f"Found format '{chosen_format}'",
                         class_name=self.class_name
                     )
                 else:
@@ -330,6 +438,37 @@ class Main:
                     f"Variable '{i[0]}' = '{i[1]}'",
                     class_name=self.class_name
                 )
+        # If the destination path is empty, set the source path and update the extension.
+        if len(self.dest) == 0:
+            path = self.src
+            if "." in path:
+                cut_data = path.split(".")
+                self.const.pdebug(
+                    f"Cut data (step1): {cut_data}",
+                    class_name=self.class_name
+                )
+                removed = cut_data.pop(-1)
+                self.const.pdebug(
+                    f"Cut data (step2): {cut_data}, poped info: {removed}",
+                    class_name=self.class_name
+                )
+                cut_data.append("tiff")
+                self.const.pdebug(
+                    f"Cut data (step3): {cut_data}",
+                    class_name=self.class_name
+                )
+                path = ".".join(cut_data)
+                self.const.pdebug(
+                    f"Cut data (step4): {path}",
+                    class_name=self.class_name
+                )
+            else:
+                path = f"{path}.tiff"
+            self.dest = path
+            self.const.pdebug(
+                f"Destination path not provided, using '{self.dest}'",
+                class_name=self.class_name
+            )
         # Check if the source is a folder
         if os.path.isdir(self.src) is True:
             self.const.pdebug(
