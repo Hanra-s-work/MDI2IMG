@@ -151,7 +151,7 @@
             "args": "${command:pickArgs}"
         },
         {
-            "name": "Python Debugger: Module with file and format",
+            "name": "Python Debugger: Module with file, destination and format",
             "type": "debugpy",
             "request": "launch",
             "module": "mdi2img",
@@ -167,7 +167,7 @@
             "args": "-d '${workspaceFolder}/sample_images/mdi/C_zorome_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_zorome_stand.png' --format='png'"
         },
         {
-            "name": "Python Debugger: Module with file",
+            "name": "Python Debugger: Module with file and destination",
             "type": "debugpy",
             "request": "launch",
             "module": "mdi2img",
@@ -240,7 +240,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/raw_library/folder_destination_format' --format='png'"
+            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/raw_library/folder_destination_format' --format='png'"
         },
         {
             "name": "Python Debugger: Raw library with debug argument, folder, destination and format",
@@ -248,7 +248,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/raw_library/debug_folder_destination_format' --format='png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/raw_library/debug_folder_destination_format' --format='png'"
         },
         {
             "name": "Python Debugger: Raw library with folder and destination",
@@ -256,7 +256,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/raw_library/folder_destination'"
+            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/raw_library/folder_destination'"
         },
         {
             "name": "Python Debugger: Raw library with debug argument, folder and destination",
@@ -264,7 +264,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/raw_library/debug_folder_destination'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/raw_library/debug_folder_destination'"
         },
         {
             "name": "Python Debugger: Raw library with folder",
@@ -337,7 +337,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/module_library/debug_folder_format' --format='png'",
+            "args": "-d '${workspaceFolder}/sample_images/module_library/out/debug_folder_format' --format='png'",
             "preLaunchTask": "Copy Files",
             "env": {
                 "SOURCE_PATH": "${workspaceFolder}/sample_images/mdi",
@@ -350,11 +350,11 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/module_library/folder'",
+            "args": "'${workspaceFolder}/sample_images/out/module_library/folder'",
             "preLaunchTask": "Copy Files",
             "env": {
                 "SOURCE_PATH": "${workspaceFolder}/sample_images/mdi",
-                "DESTINATION_PATH": "${workspaceFolder}/sample_images/module_library/folder"
+                "DESTINATION_PATH": "${workspaceFolder}/sample_images/out/module_library/folder"
             }
         },
         {
@@ -363,11 +363,11 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/module_library/debug_folder'",
+            "args": "-d '${workspaceFolder}/sample_images/out/module_library/debug_folder'",
             "preLaunchTask": "Copy Files",
             "env": {
                 "SOURCE_PATH": "${workspaceFolder}/sample_images/mdi",
-                "DESTINATION_PATH": "${workspaceFolder}/sample_images/module_library/debug_folder"
+                "DESTINATION_PATH": "${workspaceFolder}/sample_images/out/module_library/debug_folder"
             }
         },
         {
@@ -376,7 +376,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/module_library/folder_destination'"
+            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/module_library/folder_destination'"
         },
         {
             "name": "Python Debugger: Module with debug argument, folder and destination",
@@ -384,7 +384,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/module_library/debug_folder_destination'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/module_library/debug_folder_destination'"
         },
         {
             "name": "Python Debugger: Module with folder, destination and format",
@@ -392,7 +392,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/module_library/folder_destination_format' --format='png'"
+            "args": "'${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/module_library/folder_destination_format' --format='png'"
         },
         {
             "name": "Python Debugger: Module with debug argument, destination, folder and format",
@@ -400,7 +400,7 @@
             "request": "launch",
             "module": "mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/module_library/debug_folder_destination_format' --format='png'"
+            "args": "-d '${workspaceFolder}/sample_images/mdi' --destination='${workspaceFolder}/sample_images/out/module_library/debug_folder_destination_format' --format='png'"
         }
     ]
 }

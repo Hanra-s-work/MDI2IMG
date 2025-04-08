@@ -8,7 +8,7 @@
         {
             "label": "Copy Files",
             "type": "shell",
-            "command": "echo \"Copying ${env:SOURCE_PATH} to ${env:DESTINATION_PATH}\"",
+            "command": "echo \"Copying ${env:SOURCE_PATH} to ${env:DESTINATION_PATH}\" && exit 1",
             "windows": {
                 "command": "xcopy ${env:SOURCE_PATH} ${env:DESTINATION_PATH} /E /I /Y"
             },
