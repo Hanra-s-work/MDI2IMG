@@ -4,6 +4,7 @@ File in charge of displaying a converted image
 
 import os
 import tkinter as tk
+from typing import Union, Dict
 from platform import system
 from window_asset_tkinter.window_tools import WindowTools as WT
 from window_asset_tkinter.calculate_window_position import CalculateWindowPosition as CWP
@@ -14,7 +15,7 @@ class ViewImage(WT):
     The class in charge of displaying the image
     """
 
-    def __init__(self, parent_window: tk.Tk = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1) -> None:
+    def __init__(self, parent_window: tk.Tk = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, delay_init: bool = False) -> None:
         """
         The constructor of the class
 
@@ -34,20 +35,21 @@ class ViewImage(WT):
         # Saving width and height of the window
         self.width: int = width
         self.height: int = height
+        # Variable to inform if to delay the window initialisation or not
+        self.delay_init: bool = delay_init
         # Creating parent window if it does not exist
-        if parent_window is None:
-            self.parent_window = self._create_parent_window()
-        else:
-            self.parent_window = parent_window
-        self.host_dimensions = self.get_current_host_screen_dimensions(
-            self.parent_window
-        )
+        self.parent_window = None
+        self._check_tkinter_parent_window(parent_window, delay_init=delay_init)
+        # Gathering the dimensions of the user's screen to know where to place the window
+        self.host_dimensions: Dict[str, int] = None
+        self._check_host_screen_dimensions(delay_init=delay_init)
         # Initialising the window position calculator
-        self.cwp: CWP = CWP(
-            self.host_dimensions["width"],
-            self.host_dimensions["height"],
-            width,
-            height
+        self.cwp: CWP = None
+        self._check_calculate_window_position(
+            host_diemensions=self.host_dimensions,
+            width=width,
+            height=height,
+            delay_init=delay_init
         )
         # Image tracking
         self._images_buffer: list = []
@@ -74,6 +76,81 @@ class ViewImage(WT):
         self.button_open_in_viewer: tk.Button = tk.Button
         # The image counter
         self.image_count: tk.Label = tk.Label
+
+    def change_width(self, width: int) -> None:
+        """
+        Change the width of the window
+
+        :param width: The new width of the window
+        :return: None
+        """
+        self.width = width
+        if self.cwp is not None:
+            self.cwp.change_width(width)
+
+    def change_height(self, height: int) -> None:
+        """
+        Change the height of the window
+
+        :param height: The new height of the window
+        :return: None
+        """
+        self.height = height
+        if self.cwp is not None:
+            self.cwp.change_height(height)
+
+    def _check_tkinter_parent_window(self, parent_window: Union[tk.Tk, None] = None, delay_init: bool = False) -> None:
+        """
+        Check if the parent window is a tkinter window
+
+        :return: None
+        """
+        if parent_window is None:
+            if delay_init is True:
+                self.parent_window = None
+            else:
+                self.parent_window = self._create_parent_window()
+        else:
+            self.parent_window = parent_window
+
+    def _check_host_screen_dimensions(self, delay_init: bool = False) -> None:
+        """
+        Check if the host screen dimensions are set
+
+        :return: None
+        """
+        if self.host_dimensions is None:
+            if delay_init is True:
+                self.host_dimensions = None
+                return
+            if self.parent_window is None:
+                self.parent_window = self._create_parent_window()
+            self.host_dimensions = self.get_current_host_screen_dimensions(
+                self.parent_window
+            )
+
+    def _check_calculate_window_position(self, host_diemensions: dict, width: int, height: int, delay_init: bool = False) -> None:
+        """
+        Check if the calculate window position is set
+
+        :return: None
+        """
+        if self.cwp is None:
+            if delay_init is True:
+                self.cwp = None
+                return
+            if host_diemensions is None:
+                self.host_dimensions = self.get_current_host_screen_dimensions(
+                    self.parent_window
+                )
+            if "width" not in host_diemensions or "height" not in host_diemensions:
+                return
+            self.cwp = CWP(
+                host_diemensions["width"],
+                host_diemensions["height"],
+                width,
+                height
+            )
 
     def _create_parent_window(self) -> tk.Tk:
         """
@@ -129,14 +206,13 @@ class ViewImage(WT):
             }
             self.image_data.append(node)
             return node
-        else:
-            node = {
-                "name": image_path_src,
-                "error": data["err_message"]
-            }
-            self._images_buffer.append(data["err_message"])
-            self.image_data.append(node)
-            return node
+        node = {
+            "name": image_path_src,
+            "error": data["err_message"]
+        }
+        self._images_buffer.append(data["err_message"])
+        self.image_data.append(node)
+        return node
 
     def _load_images(self, image_paths: list[str], width: int, height: int) -> None:
         """
@@ -260,6 +336,14 @@ class ViewImage(WT):
         debug = False
         button_width = 10
         object_height = 135
+        self._check_tkinter_parent_window(None, False)
+        self._check_host_screen_dimensions(False)
+        self._check_calculate_window_position(
+            self.host_dimensions,
+            width,
+            height,
+            False
+        )
         if width < 1:
             width = self.width - (button_width*2)
         else:

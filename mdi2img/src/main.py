@@ -5,21 +5,32 @@
 
 import os
 import sys
-from typing import Tuple
+from typing import Tuple, List
 
 from sys import argv
 
 from .img_to_tiff import MDIToTiff
 from .globals import constants as CONST
+from .viewer import ViewImage
 from .convert_to_any import AVAILABLE_FORMATS, AVAILABLE_FORMATS_HELP
 
-DEBUG_RULES = ("--debug", "-debug", "/debug", "--d", "-d", "/d")
+DEBUG_RULES: Tuple[str] = (
+    "--debug", "-debug", "/debug",
+    "--d", "-d", "/d"
+)
 
-HELP_RULES = ("--help", "--h", "--?", "-help", "-h", "-?", "/help", "/h", "/?")
+HELP_RULES: Tuple[str] = (
+    "--help", "--h", "--?",
+    "-help", "-h", "-?",
+    "/help", "/h", "/?"
+)
 
-VERSION_RULES = ("--version", "--v", "-version", "-v", "/version", "/v")
+VERSION_RULES: Tuple[str] = (
+    "--version", "-version", "/version",
+    "--v", "-v", "/v"
+)
 
-NO_SHOW_RULES = (
+NO_SHOW_RULES: Tuple[str] = (
     "--no-show", "-no-show", "/no-show",
     "--noshow", "-noshow", "/noshow",
     "--ns", "-ns", "/ns",
@@ -31,12 +42,26 @@ DESTINATION_RULES = (
     "--dest", "-dest", "/dest"
 )
 
-FORMAT_RULES = (
+FORMAT_RULES: Tuple[str] = (
     "--format", "-format", "/format",
     "--f", "-f", "/f"
 )
 
+WINDOW_WIDTH_RULES: Tuple[str] = (
+    "--window-width", "-window-width", "/window-width",
+    "--ww", "-ww", "/ww"
+)
+
+WINDOW_HEIGHT_RULES: Tuple[str] = (
+    "--window-height", "-window-height", "/window-height",
+    "--wh", "-wh", "/wh"
+)
+
 _CWD = os.path.dirname(os.path.abspath(__file__))
+
+WINDOW_WIDTH = 500
+
+WINDOW_HEIGHT = 400
 
 
 class Main:
@@ -44,7 +69,7 @@ class Main:
     This is the main class of the program
     """
 
-    def __init__(self, success: int = CONST.SUCCESS, error: int = CONST.ERROR, skipped: int = CONST.SKIPPED, show: bool = True, cwd: str = _CWD, binary_name: str = "MDI2TIF.EXE", debug: bool = False, splash: bool = True) -> None:
+    def __init__(self, success: int = CONST.SUCCESS, error: int = CONST.ERROR, skipped: int = CONST.SKIPPED, show: bool = True, cwd: str = _CWD, binary_name: str = "MDI2TIF.EXE", debug: bool = False, splash: bool = True, window_width: int = WINDOW_WIDTH, window_height: int = WINDOW_HEIGHT) -> None:
         # -------------------------- Inherited values --------------------------
         self.cwd = cwd
         self.show = show
@@ -71,6 +96,8 @@ class Main:
         self.available_formats = AVAILABLE_FORMATS
         self.dest_found = False
         self.output_format = "default"
+        self.window_width = window_width
+        self.window_height = window_height
         # ------------------- Initialise the constants class -------------------
         self.const = CONST.Constants(
             self.binary_name,
@@ -91,6 +118,15 @@ class Main:
             self.success,
             self.error,
             self.skipped
+        )
+        # --------------------- Initialise the viewer class ---------------------
+        self.viewer_initialised: ViewImage = ViewImage(
+            None,
+            self.window_width,
+            self.window_height,
+            self.success,
+            self.error,
+            delay_init=True
         )
         # -------------------- End of class initialisation  --------------------
 
@@ -170,6 +206,83 @@ class Main:
         except ValueError:
             return False
 
+    def _get_files_in_folder(self, folder: str, recursive: bool = True) -> List[str]:
+        """_summary_
+        Get all the files in a folder.
+
+        Args:
+            folder (str): _description_: The folder to be checked.
+            recursive (bool, optional): _description_: Check if the function should be recursive. Defaults to True.
+
+        Returns:
+            List[str]: _description_: The list of files in the folder.
+        """
+        self.const.pdebug(
+            f"Getting files in folder '{folder}'",
+            class_name=self.class_name
+        )
+        if os.path.isdir(folder) is False:
+            self.const.pdebug(
+                f"The folder '{folder}' is not a directory.",
+                class_name=self.class_name
+            )
+            return []
+        if recursive is True:
+            data: List[str] = []
+            for i in os.listdir(folder):
+                path = os.path.join(folder, i)
+                self.const.pdebug(
+                    f"Checking path '{path}'",
+                    class_name=self.class_name
+                )
+                if os.path.isdir(path) is True:
+                    self.const.pdebug(
+                        f"Path '{path}' is a directory, checking recursively",
+                        class_name=self.class_name
+                    )
+                    data += self._get_files_in_folder(path, recursive)
+                else:
+                    if i.split(".")[-1].lower() not in self.available_formats:
+                        self.const.pdebug(
+                            f"File '{path}' is not a valid format, skipping it.",
+                            class_name=self.class_name
+                        )
+                        continue
+                    self.const.pdebug(
+                        f"Path '{path}' is a file, adding it to the list",
+                        class_name=self.class_name
+                    )
+                    data.append(path)
+            self.const.pdebug(
+                f"Found {len(data)} files in folder '{folder}'",
+                class_name=self.class_name
+            )
+            return data
+        data: List[str] = []
+        for i in os.listdir(folder):
+            path = os.path.join(folder, i)
+            self.const.pdebug(
+                f"Checking path '{path}'",
+                class_name=self.class_name
+            )
+            if os.path.isfile(path) is True:
+                if i.split(".")[-1].lower() not in self.available_formats:
+                    self.const.pdebug(
+                        f"File '{path}' is not a valid format, skipping it.",
+                        class_name=self.class_name
+                    )
+                    continue
+                self.const.pdebug(
+                    f"Path '{path}' is a file, adding it to the list",
+                    class_name=self.class_name
+                )
+                data.append(path)
+        self.const.pdebug(
+            f"Found {len(data)} files in folder '{folder}'",
+            class_name=self.class_name
+        )
+        return data
+
     def _check_output_format(self, output: str) -> str:
         """_summary_
         Check the output format provided by the user and return it if correct.
@@ -213,7 +326,8 @@ class Main:
         """
         print("USAGE:")
         msg = f"\t{argv[0]} <<-h>|<-v>|<SRC>> [DEST]|[--destination <DEST>] "
-        msg += "[--debug] [--no-show] [--format=<format>]"
+        msg += "[--debug] [--no-show] [--format=<format>] "
+        msg += "[--window-width=<width>] [--window-height=<height>]"
         print(msg)
         print()
         print("KEEP IN MIND:")
@@ -241,6 +355,8 @@ class Main:
         print("\t[--debug|-d]                      \tThis option will display additional information about what the program is doing.")
         print("\t[--no-show|-ns]                   \tThis option will instruct the program not to display the images once they were converted")
         print("\t[--format=<format>]               \tThis option allows you to change the default output format (tiff)")
+        print("\t[--window-width=<width>]          \tThis option allows you to change the default width of the window")
+        print("\t[--window-height=<height>]        \tThis option allows you to change the default height of the window")
         print()
         print("ABOUT:")
         print(f"This program was created by {CONST.__author__}")
@@ -400,10 +516,109 @@ class Main:
                 )
                 self.output_format = self._check_output_format(chosen_format)
                 continue
+            if arg_start in WINDOW_WIDTH_RULES:
+                min_width = 20
+                if "=" in arg:
+                    node = arg.split("=")[1]
+                    if node.isnumeric() is False:
+                        self.const.pcritical(
+                            f"Argument '{node}' is not a valid number, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    node = int(node)
+                    if node < min_width:
+                        self.const.pcritical(
+                            f"Argument '{node}' must be greater than {min_width}, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    self.window_width = node
+                    self.const.pdebug(
+                        f"Window width set to {self.window_width}",
+                        class_name=self.class_name
+                    )
+                elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                    node = self.argv[index + 1]
+                    if node.isnumeric() is False:
+                        self.const.pcritical(
+                            f"Argument '{node}' is not a valid number, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    node = int(node)
+                    if node < min_width:
+                        self.const.pcritical(
+                            f"Argument '{node}' must be greater than {min_width}, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    self.window_width = node
+                    skip_one = True
+                    self.const.pdebug(
+                        f"Window width set to {self.window_width}",
+                        class_name=self.class_name
+                    )
+                else:
+                    self.const.pcritical(
+                        f"No window width provided for the {arg} argument, skipping argument!",
+                        class_name=self.class_name
+                    )
+                    continue
+            if arg_start in WINDOW_HEIGHT_RULES:
+                min_height = 20
+                if "=" in arg:
+                    node = arg.split("=")[1]
+                    if node.isnumeric() is False:
+                        self.const.pcritical(
+                            f"Argument '{node}' is not a valid number, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    node = int(node)
+                    if node < min_height:
+                        self.const.pcritical(
+                            f"Argument '{node}' must be greater than {min_height}, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    self.window_height = node
+                    self.const.pdebug(
+                        f"Window height set to {self.window_height}",
+                        class_name=self.class_name
+                    )
+                elif index + 1 < self.argc and self.argv[index + 1] != "" and self.argv[index + 1][0].startswith("-", 0) is False:
+                    node = self.argv[index + 1]
+                    if node.isnumeric() is False:
+                        self.const.pcritical(
+                            f"Argument '{node}' is not a valid number, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    node = int(node)
+                    if node < min_height:
+                        self.const.pcritical(
+                            f"Argument '{node}' must be greater than {min_height}, skipping argument!",
+                            class_name=self.class_name
+                        )
+                        continue
+                    self.window_height = node
+                    skip_one = True
+                    self.const.pdebug(
+                        f"Window width set to {self.window_height}",
+                        class_name=self.class_name
+                    )
+                else:
+                    self.const.pcritical(
+                        f"No window width provided for the {arg} argument, skipping argument!",
+                        class_name=self.class_name
+                    )
+                    continue
             self.const.pdebug(
                 f"Argument '{item}' was not expected, ignoring it.",
                 class_name=self.class_name
             )
+            continue
         if src_found is False:
             self.const.pcritical(
                 "No source path provided, aborting!",
@@ -477,11 +692,52 @@ class Main:
                 "The provided source path is a folder.",
                 class_name=self.class_name
             )
-            return self.mdi_to_tiff_initialised.convert_all(
+            status = self.mdi_to_tiff_initialised.convert_all(
                 self.src,
                 self.dest,
                 self.output_format
             )
+            if status == self.error:
+                return status
+            # Displaying the converted image if the show flag is set to True
+            self.const.pdebug(
+                f"self.show = {self.show}",
+                class_name=self.class_name
+            )
+            if self.show is True:
+                self.const.pinfo(
+                    "Gathering the converted images in the destination folder",
+                    class_name=self.class_name
+                )
+                images = self._get_files_in_folder(self.dest, True)
+                if len(images) == 0:
+                    self.const.pdebug(
+                        "No images found in the destination folder.",
+                        class_name=self.class_name
+                    )
+                    return self.error
+                self.const.pdebug(
+                    f"Images found: {images}",
+                    class_name=self.class_name
+                )
+                self.const.pdebug(
+                    f"Window width: {self.window_width}",
+                    class_name=self.class_name
+                )
+                self.const.pdebug(
+                    f"Window height: {self.window_height}",
+                    class_name=self.class_name
+                )
+                self.const.pinfo(
+                    "Displaying the converted images",
+                    class_name=self.class_name
+                )
+                status = self.viewer_initialised.view(
+                    images,
+                    self.window_width,
+                    self.window_height
+                )
+                return status
         # Check if the source is a file
         if os.path.isfile(self.src) is True:
             self.const.pdebug(
@@ -500,11 +756,29 @@ class Main:
                 f"Output format: {self.output_format}",
                 class_name=self.class_name
             )
-            return self.mdi_to_tiff_initialised.convert(
+            status = self.mdi_to_tiff_initialised.convert(
                 self.src,
                 self.dest,
                 self.output_format
             )
+            if status == self.error:
+                return status
+            # Displaying the converted image if the show flag is set to True
+            self.const.pdebug(
+                f"self.show = {self.show}",
+                class_name=self.class_name
+            )
+            if self.show is True:
+                self.const.pinfo(
+                    "Displaying the converted image",
+                    class_name=self.class_name
+                )
+                status = self.viewer_initialised.view(
+                    self.dest,
+                    self.window_width,
+                    self.window_height
+                )
+                return status
         # error output if the source is not a file or a folder
         self.const.pdebug(
             "The provided path does not correspond to a known type.",
