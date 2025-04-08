@@ -438,7 +438,7 @@ class Main:
                     class_name=self.class_name
                 )
         # If the destination path is empty, set the source path and update the extension.
-        if len(self.dest) == 0:
+        if len(self.dest) == 0 and os.path.isdir(self.src) is False:
             path = self.src
             if "." in path:
                 cut_data = path.split(".")
@@ -468,6 +468,9 @@ class Main:
                 f"Destination path not provided, using '{self.dest}'",
                 class_name=self.class_name
             )
+        self.const.pdebug(f"dest: {self.dest}")
+        self.const.pdebug(f"src: {self.src}")
+        self.const.pdebug(f"output_format: {self.output_format}")
         # Check if the source is a folder
         if os.path.isdir(self.src) is True:
             self.const.pdebug(

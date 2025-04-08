@@ -2,7 +2,7 @@
     This is the file that is in charge of changing the default output format of the converter to one that is desired by the user.
 """
 
-from typing import Union, List
+from typing import Union, List, Dict, List
 
 from PIL import Image
 
@@ -105,6 +105,8 @@ class ChangeImageFormat:
         self.class_name = self.__class__.__name__
         self.const: Constants = constants
         self.disp: Disp = self.const.dttyi
+        self.available_formats: List = AVAILABLE_FORMATS
+        self.available_formats_help: Dict = AVAILABLE_FORMATS_HELP
 
     def check_output_file(self, output_file: str, img_format: str) -> Union[str, List[str]]:
         """_summary_
@@ -240,7 +242,7 @@ class ChangeImageFormat:
 
     def to_desired_format(self, image: str = "", output_name: str = "", img_format: str = "png") -> int:
         """_summary_
-        Convert an image to tiff format
+        Convert any image (that are not mdi) to any format supported by pillow, look at AVAILABLE_FORMATS_HELP for the list of supported formats.
 
         Args:
             image (str, optional): _description_: The image to convert. Defaults to "".

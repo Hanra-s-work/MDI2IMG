@@ -519,8 +519,10 @@ class MDIToTiff:
         for file in dir_content:
             if file.endswith(".mdi"):
                 input_file = os.path.join(input_directory, file)
+                if img_format == "default":
+                    img_format = "tiff"
                 output_file = os.path.join(
-                    output_directory, file.replace(".mdi", ".tiff")
+                    output_directory, file.replace(".mdi", f".{img_format}")
                 )
                 self.const.pinfo(
                     f"Converting '{input_file}' to '{output_file}'",
@@ -548,5 +550,57 @@ class MDIToTiff:
                         msg,
                         class_name=self.class_name
                     )
+            else:
+                self.const.pwarning(
+                    f"'{file}' is not an mdi file, skipping mdi conversion.",
+                    class_name=self.class_name
+                )
+                src = os.path.join(input_directory, file)
+                if img_format != "default" and file.endswith(f".{img_format}") is False:
+                    temp = file.split(".")
+                    self.const.pdebug(
+                        f"Splitting file name (step 1): {temp}", class_name=self.class_name)
+                    temp[-1] = img_format
+                    self.const.pdebug(
+                        f"Splitting file name (step 2): {temp}", class_name=self.class_name)
+                    temp = ".".join(temp)
+                    self.const.pdebug(
+                        f"Splitting file name (step 3): {temp}", class_name=self.class_name)
+                    dst = os.path.join(output_directory, temp)
+                    self.const.pdebug(
+                        f"Splitting file name (step 4): {dst}", class_name=self.class_name)
+                else:
+                    dst = os.path.join(output_directory, file)
+                if img_format != file.split(".")[-1] and img_format != "default" and img_format in self.cifi.available_formats:
+                    self.const.pinfo(
+                        f"Converting '{file}' to '{img_format}'",
+                        class_name=self.class_name
+                    )
+                    self.cifi.to_desired_format(
+                        image=src,
+                        output_name=dst,
+                        img_format=img_format
+                    )
+                self.const.pinfo(
+                    f"'{file}' is already in the desired format, copying without the second stage conversion.",
+                    class_name=self.class_name
+                )
+                if src == dst or os.path.samefile(src, dst):
+                    self.const.pwarning(
+                        "Source and destination are the same, skipping copy.",
+                        class_name=self.class_name
+                    )
+                    self._update_folder_conversion_stat_session(
+                        self.skipped
+                    )
+                    continue
+                self.const.pinfo(
+                    f"Copying '{src}' to '{dst}'",
+                    class_name=self.class_name
+                )
+                shutil.copy(
+                    src,
+                    dst
+                )
         self._display_folder_conversion_stat_session()
         return self.global_status
