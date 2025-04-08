@@ -1,0 +1,28 @@
+// This file is used to define tasks for the VS Code debugger.
+// It specifies the commands to be executed when the debugger is run.
+// The tasks are defined in JSON format and can be customized as per the requirements.
+// The tasks can include commands for building, running, and debugging the code.
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Copy Files",
+            "type": "shell",
+            "command": "echo \"Copying ${env:SOURCE_PATH} to ${env:DESTINATION_PATH}\"",
+            "windows": {
+                "command": "xcopy ${env:SOURCE_PATH} ${env:DESTINATION_PATH} /E /I /Y"
+            },
+            "linux": {
+                "command": "cp -rf ${env:SOURCE_PATH}/* ${env:DESTINATION_PATH}/"
+            },
+            "osx": {
+                "command": "cp -rf ${env:SOURCE_PATH}/* ${env:DESTINATION_PATH}/"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
