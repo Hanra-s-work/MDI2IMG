@@ -278,7 +278,6 @@ class Main:
                 f"Argument {item}, argument type = {type(item)}, cleaned_item: {cleaned_item}, is a path: {is_path}",
                 class_name=self.class_name
             )
-            print("Buffer print")
             if skip_one is True:
                 skip_one = False
                 self.const.pdebug(
