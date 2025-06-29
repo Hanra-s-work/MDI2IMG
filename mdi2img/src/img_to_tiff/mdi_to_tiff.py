@@ -364,8 +364,16 @@ class MDIToTiff:
                 class_name=self.class_name
             )
             return self.error
-        command = f"{prepended_bin_path}{self.bin_path} -source {input_file} -dest {step1} "
-        command += f"-log {self.const.log_file_location}"
+        if '"' in input_file:
+            input_file = input_file.replace('"', '\\"')
+        if '"' in step1:
+            step1 = step1.replace('"', '\\"')
+        if '"' in self.const.log_file_location:
+            self.const.log_file_location = self.const.log_file_location.replace(
+                '"', '\\"'
+            )
+        command = f"{prepended_bin_path}{self.bin_path} -source \"{input_file}\" -dest \"{step1}\" "
+        command += f"-log \"{self.const.log_file_location}\""
         self.const.pdebug(
             f"Command: {command}",
             class_name=self.class_name

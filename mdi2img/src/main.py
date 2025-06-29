@@ -126,6 +126,8 @@ class Main:
             self.window_height,
             self.success,
             self.error,
+            self.const,
+            debug=self.debug,
             delay_init=True
         )
         # -------------------- End of class initialisation  --------------------

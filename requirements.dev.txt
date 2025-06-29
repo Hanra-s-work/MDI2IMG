@@ -2,3 +2,5 @@ build ==1.2.2.post1
 pytest ==8.3.5
 wheel ==0.45.1
 setuptools ==78.1.0
+# Installing the default requirements
+-r ./requirements.txt

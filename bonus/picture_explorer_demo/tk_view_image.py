@@ -5,13 +5,11 @@ File in charge of displaying a converted image
 import os
 import gc
 import sys
+import tkinter as tk
 from platform import system
-from typing import Union, Dict, Any
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QMainWindow
-)
-from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt, QRect
+from PIL.ImageTk import PhotoImage
+from typing import Union, Dict
+from window_asset_tkinter.window_tools import WindowTools as WT
 from window_asset_tkinter.calculate_window_position import CalculateWindowPosition as CWP
 
 if __name__ != "__main__":
@@ -28,12 +26,12 @@ else:
     from globals import Constants
 
 
-class ViewImage:
+class ViewImage(WT):
     """
     The class in charge of displaying the image
     """
 
-    def __init__(self, parent_window: QApplication, width: int = 500, height: int = 400, success: int = 0, error: int = 1, parent_const: Union[Constants, None] = None, debug: bool = False, delay_init: bool = False) -> None:
+    def __init__(self, parent_window: tk.Tk = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, parent_const: Union[Constants, None] = None, debug: bool = False, delay_init: bool = False) -> None:
         """
         The constructor of the class
 
@@ -43,6 +41,8 @@ class ViewImage:
         :param success: The success status code
         :param error: The error status code
         """
+
+        super(ViewImage, self).__init__()
 
         # Debug status
         self.debug = debug
@@ -73,8 +73,8 @@ class ViewImage:
         # Variable to inform if to delay the window initialisation or not
         self.delay_init: bool = delay_init
         # Creating parent window if it does not exist
-        self.parent_window: QApplication = None
-        self._check_qt_parent_window(parent_window, delay_init=delay_init)
+        self.parent_window = None
+        self._check_tkinter_parent_window(parent_window, delay_init=delay_init)
         # Gathering the dimensions of the user's screen to know where to place the window
         self.host_dimensions: Dict[str, int] = None
         self._check_host_screen_dimensions(delay_init=delay_init)
@@ -98,51 +98,21 @@ class ViewImage:
         self.bg: str = "white"
         self.fg: str = "black"
         # Title section
-        self.title_label: QLabel = QLabel
+        self.title_label: tk.Label = tk.Label
         # image_viewer section
-        self.image_viewer: QLabel = QLabel
-        self.image_viewer_error: QLabel = QLabel
+        self.image_viewer: tk.Label = tk.Label
+        self.image_viewer_error: tk.Label = tk.Label
         self.has_been_forgotten: bool = False
         # button_prev section
-        self.button_prev: QPushButton = QPushButton
+        self.button_prev: tk.Button = tk.Button
         # button_next section
-        self.button_next: QPushButton = QPushButton
+        self.button_next: tk.Button = tk.Button
         # button_open_in_viewer section
-        self.button_open_in_viewer: QPushButton = QPushButton
+        self.button_open_in_viewer: tk.Button = tk.Button
         # The image counter
-        self.image_count: QLabel = QLabel
+        self.image_count: tk.Label = tk.Label
         # Current image to be displayed
-        self._current_display_image: QPixmap = None
-
-    @staticmethod
-    def get_current_host_screen_dimensions(parent_window: QMainWindow) -> Dict[str, int]:
-        """
-        Create a temporary hidden tool window to determine the screen geometry on which
-        the application is currently running, then destroy the window.
-
-        Args:
-            parent_window (QMainWindow): The parent window used to anchor the screen lookup.
-
-        Returns:
-            dict: {"width": width, "height": height, "left": left, "top": top}
-        """
-        temp_window = QMainWindow(parent_window, Qt.WindowType.Tool)
-        temp_window.show()
-        temp_window.hide()
-        parent_window.repaint()  # make sure events are processed
-        parent_window.app.processEvents()  # if needed for parent updates
-
-        screen_geometry: QRect = temp_window.screen().geometry()
-
-        temp_window.close()
-        temp_window.deleteLater()
-
-        return {
-            "width": screen_geometry.width(),
-            "height": screen_geometry.height(),
-            "left": screen_geometry.left(),
-            "top": screen_geometry.top(),
-        }
+        self._current_display_image: PhotoImage = None
 
     def change_width(self, width: int) -> None:
         """
@@ -174,7 +144,7 @@ class ViewImage:
         if self.cwp is not None:
             self.cwp.change_height(height)
 
-    def _check_qt_parent_window(self, parent_window: Union[QApplication, None] = None, delay_init: bool = False) -> None:
+    def _check_tkinter_parent_window(self, parent_window: Union[tk.Tk, None] = None, delay_init: bool = False) -> None:
         """
         Check if the parent window is a tkinter window
 
@@ -239,7 +209,7 @@ class ViewImage:
                 height
             )
 
-    def _create_parent_window(self) -> QApplication:
+    def _create_parent_window(self) -> tk.Tk:
         """
         This is the function in charge of initialising the base window that will be used to render the rest of the software.
 
@@ -250,8 +220,8 @@ class ViewImage:
             "Creating the parent window",
             class_name=self.class_name
         )
-        window = QApplication(sys.argv)
-        # window.hide()
+        window = tk.Tk()
+        # window.withdraw()
         return window
 
     def _load_image(self, image_path_src: str, width: int, height: int) -> dict:
@@ -539,7 +509,7 @@ class ViewImage:
         self._update_current_image_title()
         self._update_current_image_index()
 
-    def hl_swap(self, item1: Any, item2: any) -> list[any, any]:
+    def hl_swap(self, item1: any, item2: any) -> list[any, any]:
         """
         Swap the values of two items
         :param item1: The first item
@@ -595,7 +565,7 @@ class ViewImage:
             "Checking the parent window",
             class_name=self.class_name
         )
-        self._check_qt_parent_window(None, False)
+        self._check_tkinter_parent_window(None, False)
         self.const.pdebug(
             "Checking the host screen dimensions",
             class_name=self.class_name
