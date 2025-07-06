@@ -74,6 +74,136 @@
             "console": "integratedTerminal",
             "args": "-d '${workspaceFolder}/sample_images/mdi/C_ichigo_stand.mdi' --destination='${workspaceFolder}/sample_images/out/C_ichigo_stand.png'"
         },
+        //spaces
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        // system viewer
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
         {
             "name": "Python Debugger: Raw library with file",
             "type": "debugpy",
@@ -125,14 +255,6 @@
                 "SOURCE_PATH": "${workspaceFolder}/sample_images/mdi/C_mitsuru_stand.mdi",
                 "DESTINATION_PATH": "${workspaceFolder}/sample_images/out/C_mitsuru_stand.mdi"
             }
-        },
-        {
-            "name": "Python Debugger: Raw library with debug argument, file with spaces and destination",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/mdi2img",
-            "console": "integratedTerminal",
-            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
         },
         {
             "name": "Python Debugger: Module with help argument",
@@ -189,6 +311,136 @@
             "module": "mdi2img",
             "console": "integratedTerminal",
             "args": "-d '${workspaceFolder}/sample_images/mdi/C_argentea.mdi' --destination='${workspaceFolder}/sample_images/out/C_argentea.png'"
+        },
+        //spaces
+        {
+            "name": "Python Debugger: Module with file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination and format",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\""
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
+        },
+        // system viewer
+        {
+            "name": "Python Debugger: Module with file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination, format, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --format=\"png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "\"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
+        },
+        {
+            "name": "Python Debugger: Module with debug argument, file with spaces, destination, system viewer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\" --system-viewer"
         },
         {
             "name": "Python Debugger: Module with file",
