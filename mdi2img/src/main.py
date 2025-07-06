@@ -5,7 +5,7 @@
 
 import os
 import sys
-from typing import Tuple, List
+from typing import Tuple, List, Literal
 
 from sys import argv
 
@@ -14,50 +14,122 @@ from .globals import constants as CONST
 from .viewer import ViewImage
 from .convert_to_any import AVAILABLE_FORMATS, AVAILABLE_FORMATS_HELP
 
-DEBUG_RULES: Tuple[str] = (
+DEBUG_RULES: Tuple[
+    Literal['--debug'],
+    Literal['-debug'],
+    Literal['/debug'],
+    Literal['--d'],
+    Literal['-d'],
+    Literal['/d']
+] = (
     "--debug", "-debug", "/debug",
     "--d", "-d", "/d"
 )
 
-HELP_RULES: Tuple[str] = (
+HELP_RULES: Tuple[
+    Literal['--help'],
+    Literal['--h'],
+    Literal['--?'],
+    Literal['-help'],
+    Literal['-h'],
+    Literal['-?'],
+    Literal['/help'],
+    Literal['/h'],
+    Literal['/?']
+] = (
     "--help", "--h", "--?",
     "-help", "-h", "-?",
     "/help", "/h", "/?"
 )
 
-VERSION_RULES: Tuple[str] = (
+VERSION_RULES: Tuple[
+    Literal['--version'],
+    Literal['-version'],
+    Literal['/version'],
+    Literal['--v'],
+    Literal['-v'],
+    Literal['/v']
+] = (
     "--version", "-version", "/version",
     "--v", "-v", "/v"
 )
 
-NO_SHOW_RULES: Tuple[str] = (
+NO_SHOW_RULES: Tuple[
+    Literal['--no-show'],
+    Literal['-no-show'],
+    Literal['/no-show'],
+    Literal['--noshow'],
+    Literal['-noshow'],
+    Literal['/noshow'],
+    Literal['--ns'],
+    Literal['-ns'],
+    Literal['/ns'],
+    Literal['--no_show'],
+    Literal['-no_show'],
+    Literal['/no_show']
+] = (
     "--no-show", "-no-show", "/no-show",
     "--noshow", "-noshow", "/noshow",
     "--ns", "-ns", "/ns",
     "--no_show", "-no_show", "/no_show"
 )
 
-DESTINATION_RULES = (
+DESTINATION_RULES: Tuple[
+    Literal['--destination'],
+    Literal['-destination'],
+    Literal['/destination'],
+    Literal['--dest'],
+    Literal['-dest'],
+    Literal['/dest']
+] = (
     "--destination", "-destination", "/destination",
     "--dest", "-dest", "/dest"
 )
 
-FORMAT_RULES: Tuple[str] = (
+FORMAT_RULES: Tuple[
+    Literal['--format'],
+    Literal['-format'],
+    Literal['/format'],
+    Literal['--f'],
+    Literal['-f'],
+    Literal['/f']
+] = (
     "--format", "-format", "/format",
     "--f", "-f", "/f"
 )
 
-WINDOW_WIDTH_RULES: Tuple[str] = (
+WINDOW_WIDTH_RULES: Tuple[
+    Literal['--window-width'],
+    Literal['-window-width'],
+    Literal['/window-width'],
+    Literal['--ww'],
+    Literal['-ww'],
+    Literal['/ww']
+] = (
     "--window-width", "-window-width", "/window-width",
     "--ww", "-ww", "/ww"
 )
 
-WINDOW_HEIGHT_RULES: Tuple[str] = (
+WINDOW_HEIGHT_RULES: Tuple[
+    Literal['--window-height'],
+    Literal['-window-height'],
+    Literal['/window-height'],
+    Literal['--wh'],
+    Literal['-wh'],
+    Literal['/wh']
+] = (
     "--window-height", "-window-height", "/window-height",
     "--wh", "-wh", "/wh"
 )
 
-SYSTEM_VIEWER: Tuple[str] = (
+SYSTEM_VIEWER: Tuple[
+    Literal['--system-viewer'],
+    Literal['-system-viewer'],
+    Literal['/system-viewer'],
+    Literal['--sv'],
+    Literal['-sv'],
+    Literal['/sv']
+] = (
     "--system-viewer", "-system-viewer", "/system-viewer",
     "--sv", "-sv", "/sv"
 )
@@ -103,6 +175,7 @@ class Main:
         self.output_format = "default"
         self.window_width = window_width
         self.window_height = window_height
+        self.use_default_system_viewer = False
         # ------------------- Initialise the constants class -------------------
         self.const = CONST.Constants(
             self.binary_name,
@@ -133,7 +206,8 @@ class Main:
             success=self.success,
             error=self.error,
             debug=self.debug,
-            delay_init=True
+            delay_init=True,
+            use_default_system_viewer=self.use_default_system_viewer
         )
         # -------------------- End of class initialisation  --------------------
 
@@ -627,7 +701,7 @@ class Main:
                     "System viewer mode enabled.",
                     class_name=self.class_name
                 )
-                self.viewer_initialised.default_to_system_viewer(True)
+                self.use_default_system_viewer = True
                 continue
             self.const.pdebug(
                 f"Argument '{item}' was not expected, ignoring it.",
@@ -678,7 +752,7 @@ class Main:
                 )
                 removed = cut_data.pop(-1)
                 self.const.pdebug(
-                    f"Cut data (step2): {cut_data}, poped info: {removed}",
+                    f"Cut data (step2): {cut_data}, popped info: {removed}",
                     class_name=self.class_name
                 )
                 cut_data.append("tiff")
@@ -747,6 +821,8 @@ class Main:
                     "Displaying the converted images",
                     class_name=self.class_name
                 )
+                self.viewer_initialised.default_to_system_viewer(
+                    self.use_default_system_viewer)
                 status = self.viewer_initialised.view(
                     images,
                     self.window_width,
@@ -787,6 +863,9 @@ class Main:
                 self.const.pinfo(
                     "Displaying the converted image",
                     class_name=self.class_name
+                )
+                self.viewer_initialised.default_to_system_viewer(
+                    self.use_default_system_viewer
                 )
                 status = self.viewer_initialised.view(
                     self.dest,

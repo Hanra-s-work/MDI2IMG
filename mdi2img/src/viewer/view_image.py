@@ -16,15 +16,19 @@ class ViewImage(WT):
     The class in charge of displaying the image
     """
 
-    def __init__(self, binary_name: Union[str, CONST.Constants] = "", parent_window: Union[tk.Tk, None] = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, delay_init: bool = False, debug: bool = False) -> None:
+    def __init__(self, binary_name: Union[str, CONST.Constants] = "", parent_window: Union[tk.Tk, None] = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, delay_init: bool = False, debug: bool = False, use_default_system_viewer: bool = False) -> None:
         """
         The constructor of the class
 
+        :param binary_name: The name of the binary to use, if not provided, it will use the default one
         :param parent_window: The parent window
         :param width: The width of the window
         :param height: The height of the window
         :param success: The success status code
         :param error: The error status code
+        :param delay_init: If True, the window will not be initialised immediately
+        :param debug: If True, the debug mode will be enabled
+        :param use_default_system_viewer: If True, the viewer will use the system viewer by default
         """
 
         super(ViewImage, self).__init__()
@@ -95,7 +99,7 @@ class ViewImage(WT):
         # The image counter
         self.image_count: tk.Label = tk.Label
         # Use system viewer
-        self.use_system_viewer: bool = False
+        self.use_system_viewer: bool = use_default_system_viewer
 
     def default_to_system_viewer(self, default_to_it: bool = True) -> None:
         """
