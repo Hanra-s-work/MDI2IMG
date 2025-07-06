@@ -127,6 +127,14 @@
             }
         },
         {
+            "name": "Python Debugger: Raw library with debug argument, file with spaces and destination",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mdi2img",
+            "console": "integratedTerminal",
+            "args": "-d '${workspaceFolder}/sample_images/mdi/86\\'s helper (fido).mdi' --destination='${workspaceFolder}/sample_images/out/86\\'s helper (fido).png'"
+        },
+        {
             "name": "Python Debugger: Module with help argument",
             "type": "debugpy",
             "request": "launch",
