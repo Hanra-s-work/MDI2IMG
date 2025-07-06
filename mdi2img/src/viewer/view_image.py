@@ -4,7 +4,7 @@ File in charge of displaying a converted image
 
 import os
 import tkinter as tk
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Any
 from platform import system
 from window_asset_tkinter.window_tools import WindowTools as WT
 from window_asset_tkinter.calculate_window_position import CalculateWindowPosition as CWP
@@ -423,7 +423,7 @@ class ViewImage(WT):
             class_name=self.class_name
         )
 
-    def hl_swap(self, item1: any, item2: any) -> list[any, any]:
+    def hl_swap(self, item1: Any, item2: Any) -> list[Any, Any]:
         """
         Swap the values of two items
         :param item1: The first item
@@ -446,11 +446,11 @@ class ViewImage(WT):
             class_name=self.class_name
         )
         if system() == "Windows":
-            os.system(f"start {image_file_path}")
+            os.system(f"start \"\" \"{image_file_path}\"")
         elif system() == "Linux":
-            os.system(f"xdg-open {image_file_path}")
+            os.system(f"xdg-open \"{image_file_path}\"")
         elif system() == "Darwin":
-            os.system(f"open {image_file_path}")
+            os.system(f"open \"{image_file_path}\"")
         self.const.pdebug(
             f"Opened the current image in the system viewer: {image_file_path}",
             class_name=self.class_name
@@ -482,10 +482,6 @@ class ViewImage(WT):
         :param image_path: The path to the image to display
         :return: The status of the display (success:int  or error:int)
         """
-        self.const.pdebug(
-            f"\n\n\n\n\n\nRunning the main function (called view) of the {self.class_name} class, images: {image_paths}\n\n\n\n\n\n",
-            class_name=self.class_name
-        )
         self.const.pdebug(
             f"Displaying image(s): {image_paths}",
             class_name=self.class_name
