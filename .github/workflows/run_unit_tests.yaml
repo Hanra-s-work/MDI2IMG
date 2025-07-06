@@ -22,18 +22,17 @@ env:
   LATEST_TAG: ""
 
 jobs:
-
   increment-the-tag:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -71,18 +70,18 @@ jobs:
             latest_tag=${latest_tag/"v"/""}
             echo "Tag: $latest_tag"
             sed -i "s/version='.*'/version='$latest_tag'/g" ${{env.SETUP_FILE}}
-          sed -i "s/self.__version__ = '.*'/self.__version__ = '$latest_tag'/g" ${{env.SOURCE_CODE_PATH}}
+            sed -i "s/self.__version__ = '.*'/self.__version__ = '$latest_tag'/g" ${{env.SOURCE_CODE_PATH}}
           fi
           echo "Content: $(ls)"
           echo "Content of file: $(cat ${{env.SETUP_FILE}})"
           echo -e "\n\n\n\n\n\n\n\n\n"
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest
           lib_packages=$(find ./*/ -name "requirements.txt" -type f)
-          first_requirement=$(echo $lib_packages | cut -d " " -f 1)
+          first_requirements=$(echo $lib_packages | cut -d " " -f 1)
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ ${#first_requirements} -gt 0 ]; then pip install -r $first_requirements.txt; fi
 
@@ -92,7 +91,7 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-          
+
       - name: building the package
         run: |
           latest_tag="$(cat ${{env.TAG_FILE}})"
@@ -107,7 +106,7 @@ jobs:
           fi
           pip install build
           python -m build
-      
+
       - name: Installing the package
         run: |
           PIP_PACKAGE="$(find . -name "*.tar.gz" -type f | cut -d " " -f 1)"
