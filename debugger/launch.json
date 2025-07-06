@@ -132,7 +132,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/mdi2img",
             "console": "integratedTerminal",
-            "args": "-d '${workspaceFolder}/sample_images/mdi/86\\'s helper (fido).mdi' --destination='${workspaceFolder}/sample_images/out/86\\'s helper (fido).png'"
+            "args": "-d \"${workspaceFolder}/sample_images/mdi/86's helper (fido).mdi\" --destination=\"${workspaceFolder}/sample_images/out/86's helper (fido).png\""
         },
         {
             "name": "Python Debugger: Module with help argument",
