@@ -34,4 +34,9 @@ MI = Main(
 )
 MI.const.pdebug("Initialised MDI2IMG module", __name__, _CWD)
 status = MI.main()
+if isinstance(status, bool) is True:
+    if status is True:
+        sys.exit(MI.success)
+    else:
+        sys.exit(MI.error)
 sys.exit(status)
