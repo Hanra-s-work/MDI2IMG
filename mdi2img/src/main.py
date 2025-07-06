@@ -57,6 +57,11 @@ WINDOW_HEIGHT_RULES: Tuple[str] = (
     "--wh", "-wh", "/wh"
 )
 
+SYSTEM_VIEWER: Tuple[str] = (
+    "--system-viewer", "-system-viewer", "/system-viewer",
+    "--sv", "-sv", "/sv"
+)
+
 _CWD = os.path.dirname(os.path.abspath(__file__))
 
 WINDOW_WIDTH = 500
@@ -359,6 +364,7 @@ class Main:
         print("\t[--format=<format>]               \tThis option allows you to change the default output format (tiff)")
         print("\t[--window-width=<width>]          \tThis option allows you to change the default width of the window")
         print("\t[--window-height=<height>]        \tThis option allows you to change the default height of the window")
+        print("\t[--system-viewer|-sv]             \tThis option will use the system viewer to display the images instead of the built-in viewer")
         print()
         print("ABOUT:")
         print(f"This program was created by {CONST.__author__}")
@@ -616,6 +622,13 @@ class Main:
                         class_name=self.class_name
                     )
                     continue
+            if arg_start in SYSTEM_VIEWER:
+                self.const.pdebug(
+                    "System viewer mode enabled.",
+                    class_name=self.class_name
+                )
+                self.viewer_initialised.default_to_system_viewer(True)
+                continue
             self.const.pdebug(
                 f"Argument '{item}' was not expected, ignoring it.",
                 class_name=self.class_name

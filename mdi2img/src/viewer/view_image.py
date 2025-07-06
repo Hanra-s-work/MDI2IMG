@@ -4,7 +4,7 @@ File in charge of displaying a converted image
 
 import os
 import tkinter as tk
-from typing import Union, Dict
+from typing import Union, Dict, List
 from platform import system
 from window_asset_tkinter.window_tools import WindowTools as WT
 from window_asset_tkinter.calculate_window_position import CalculateWindowPosition as CWP
@@ -94,13 +94,29 @@ class ViewImage(WT):
         self.button_open_in_viewer: tk.Button = tk.Button
         # The image counter
         self.image_count: tk.Label = tk.Label
+        # Use system viewer
+        self.use_system_viewer: bool = False
+
+    def default_to_system_viewer(self, default_to_it: bool = True) -> None:
+        """
+        Set the viewer to use the system viewer by default: return: None
+        """
+        self.const.pdebug(
+            "Setting the viewer to use the system viewer by default",
+            class_name=self.class_name
+        )
+        if default_to_it is True:
+            self.use_system_viewer = True
+        else:
+            self.use_system_viewer = False
+        self.const.pdebug(
+            "Viewer set to use the system viewer by default",
+            class_name=self.class_name
+        )
 
     def change_width(self, width: int) -> None:
         """
-        Change the width of the window
-
-        :param width: The new width of the window
-        :return: None
+        Change the width of the window: param width: The new width of the window: return: None
         """
         self.const.pdebug(
             f"Changing width of the window to {width}",
@@ -116,10 +132,7 @@ class ViewImage(WT):
 
     def change_height(self, height: int) -> None:
         """
-        Change the height of the window
-
-        :param height: The new height of the window
-        :return: None
+        Change the height of the window: param height: The new height of the window: return: None
         """
         self.const.pdebug(
             f"Changing height of the window to {height}",
@@ -135,9 +148,7 @@ class ViewImage(WT):
 
     def _check_tkinter_parent_window(self, parent_window: Union[tk.Tk, None] = None, delay_init: bool = False) -> None:
         """
-        Check if the parent window is a tkinter window
-
-        :return: None
+        Check if the parent window is a tkinter window: return: None
         """
         self.const.pdebug(
             f"Checking if the parent window is a tkinter window: {parent_window}",
@@ -157,9 +168,7 @@ class ViewImage(WT):
 
     def _check_host_screen_dimensions(self, delay_init: bool = False) -> None:
         """
-        Check if the host screen dimensions are set
-
-        :return: None
+        Check if the host screen dimensions are set: return: None
         """
         self.const.pdebug(
             f"Checking if the host screen dimensions are set: {self.host_dimensions}",
@@ -181,9 +190,7 @@ class ViewImage(WT):
 
     def _check_calculate_window_position(self, host_diemensions: dict, width: int, height: int, delay_init: bool = False) -> None:
         """
-        Check if the calculate window position is set
-
-        :return: None
+        Check if the calculate window position is set: return: None
         """
         self.const.pdebug(
             f"Checking if the calculate window position is set: {self.cwp}",
@@ -214,8 +221,7 @@ class ViewImage(WT):
         """
         This is the function in charge of initialising the base window that will be used to render the rest of the software.
 
-        Create the parent window
-        :return: The parent window
+        Create the parent window: return: The parent window
         """
         self.const.pdebug(
             "Creating the parent window",
@@ -231,20 +237,17 @@ class ViewImage(WT):
 
     def _load_image(self, image_path_src: str, width: int, height: int) -> dict:
         """
-        Load the image into memory
-
-        :param image_path: The path to the image to load
-        :return: The image node
+        Load the image into memory: param image_path: The path to the image to load: return: The image node
 
         raw_content:
-            * "img": <image_instance:obj>
-            * "width": <width:int>
-            * "height": <height:int>
-            * "path": <image_path:str>
-            * "name": <image_name:str>
+            * "img": < image_instance: obj >
+            * "width": < width: int >
+            * "height": < height: int >
+            * "path": < image_path: str >
+            * "name": < image_name: str >
         when error:
-            * "name": <the_name:str>
-            * "error": <the_error:str>  
+            * "name": < the_name: str >
+            * "error": < the_error: str >
         """
         self.const.pdebug(
             f"Loading image from path: {image_path_src}",
@@ -290,10 +293,7 @@ class ViewImage(WT):
 
     def _load_images(self, image_paths: list[str], width: int, height: int) -> None:
         """
-        Load multiple images into memory
-
-        :param image_paths: The paths to the images to load
-        :return: None
+        Load multiple images into memory: param image_paths: The paths to the images to load: return: None
         """
         self.const.pdebug(
             f"Loading multiple images from paths: {image_paths}",
@@ -341,7 +341,7 @@ class ViewImage(WT):
 
     def _update_current_image_index(self) -> None:
         """
-        Update the index displayed of the current image 
+        Update the index displayed of the current image
         """
         self.const.pdebug(
             f"Updating the current image index: {self.current_image}",
@@ -432,7 +432,27 @@ class ViewImage(WT):
         )
         return [item2, item1]
 
-    def _open_in_system_viewer(self, *args) -> None:
+    def _open_in_system_viewer(self, image_file_path: str = "") -> None:
+        """
+        Open the current image in the system viewer
+        :return: None
+        """
+        self.const.pdebug(
+            f"Opening the current image in the system viewer: {image_file_path}",
+            class_name=self.class_name
+        )
+        if system() == "Windows":
+            os.system(f"start {image_file_path}")
+        elif system() == "Linux":
+            os.system(f"xdg-open {image_file_path}")
+        elif system() == "Darwin":
+            os.system(f"open {image_file_path}")
+        self.const.pdebug(
+            f"Opened the current image in the system viewer: {image_file_path}",
+            class_name=self.class_name
+        )
+
+    def _open_in_system_viewer_tk_rebind(self, *args) -> None:
         """
         Open the current image in the system viewer
         :return: None
@@ -444,22 +464,13 @@ class ViewImage(WT):
         current_image = self.current_image
         if self.current_image > self.max_images:
             current_image = 0
-        if system() == "Windows":
-            os.system(
-                f"start {self.image_data[current_image]['path']}"
+        if self.use_system_viewer is True:
+            self._open_in_system_viewer(self.image_data[current_image]['path'])
+        else:
+            self.const.pdebug(
+                "System viewer is not enabled, skipping opening in system viewer",
+                class_name=self.class_name
             )
-        elif system() == "Linux":
-            os.system(
-                f"xdg-open {self.image_data[current_image]['path']}"
-            )
-        elif system() == "Darwin":
-            os.system(
-                f"open {self.image_data[current_image]['path']}"
-            )
-        self.const.pdebug(
-            f"Opened the current image in the system viewer: {self.image_data[current_image]['path']}",
-            class_name=self.class_name
-        )
 
     def view(self, image_paths: list[str] | str, width: int = 0, height: int = 0) -> int:
         """
@@ -468,10 +479,39 @@ class ViewImage(WT):
         :return: The status of the display (success:int  or error:int)
         """
         self.const.pdebug(
+            f"\n\n\n\n\n\nRunning the main function (called view) of the {self.class_name} class, images: {image_paths}\n\n\n\n\n\n",
+            class_name=self.class_name
+        )
+        self.const.pdebug(
             f"Displaying image(s): {image_paths}",
             class_name=self.class_name
         )
-        debug = False
+        if self.use_system_viewer is True:
+            if isinstance(image_paths, (str, List)) is False:
+                self.const.pdebug(
+                    "System viewer is enabled, but the image_paths is not a string or list, skipping opening in system viewer",
+                    class_name=self.class_name
+                )
+                return self.error
+            if isinstance(image_paths, str) is True:
+                image_paths = [image_paths]
+            for i in image_paths:
+                if isinstance(i, str) is True and os.path.exists(i) is True:
+                    self.const.pdebug(
+                        f"Opening image '{i}' in the system viewer",
+                        class_name=self.class_name
+                    )
+                    self._open_in_system_viewer(i)
+                else:
+                    self.const.pdebug(
+                        f"Path '{i}' does not exist, skipping it.",
+                        class_name=self.class_name
+                    )
+            self.const.pdebug(
+                "Opened images in the system viewer",
+                class_name=self.class_name
+            )
+            return self.success
         button_width = 10
         object_height = 135
         self._check_tkinter_parent_window(None, False)
@@ -521,7 +561,7 @@ class ViewImage(WT):
             child_window,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="blue" if debug else self.bg,
+            bkg="blue" if self.debug else self.bg,
             width=self.width,
             height=2,
             position_x=0,
@@ -534,7 +574,7 @@ class ViewImage(WT):
             child_window,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="orange" if debug else self.bg,
+            bkg="orange" if self.debug else self.bg,
             width=self.width,
             height=self.height - self.y_offset,
             position_x=0,
@@ -547,7 +587,7 @@ class ViewImage(WT):
             child_window,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="cyan" if debug else self.bg,
+            bkg="cyan" if self.debug else self.bg,
             width=self.width,
             height=2,
             position_x=0,
@@ -560,7 +600,7 @@ class ViewImage(WT):
             child_window,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="purple" if debug else self.bg,
+            bkg="purple" if self.debug else self.bg,
             width=self.width,
             height=self.height - self.y_offset,
             position_x=0,
@@ -574,7 +614,7 @@ class ViewImage(WT):
             button_frame,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="green" if debug else self.bg,
+            bkg="green" if self.debug else self.bg,
             width=self.width,
             height=self.height - self.y_offset,
             position_x=0,
@@ -587,7 +627,7 @@ class ViewImage(WT):
             image_frame,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="yellow" if debug else self.bg,
+            bkg="yellow" if self.debug else self.bg,
             width=self.width,
             height=self.height - self.y_offset,
             position_x=0,
@@ -600,7 +640,7 @@ class ViewImage(WT):
             button_frame,
             borderwidth=0,
             relief=tk.FLAT,
-            bkg="red" if debug else self.bg,
+            bkg="red" if self.debug else self.bg,
             width=self.width,
             height=self.height - self.y_offset,
             position_x=0,
@@ -682,7 +722,7 @@ class ViewImage(WT):
             fg=self.fg,
             bkg=self.bg,
             side=tk.LEFT,
-            command=self._open_in_system_viewer,
+            command=self._open_in_system_viewer_tk_rebind,
             width=button_width*2,
             height=1,
             position_x=0,
