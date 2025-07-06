@@ -8,6 +8,7 @@ from typing import Union, Dict
 from platform import system
 from window_asset_tkinter.window_tools import WindowTools as WT
 from window_asset_tkinter.calculate_window_position import CalculateWindowPosition as CWP
+from ..globals import constants as CONST
 
 
 class ViewImage(WT):
@@ -15,7 +16,7 @@ class ViewImage(WT):
     The class in charge of displaying the image
     """
 
-    def __init__(self, parent_window: tk.Tk = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, delay_init: bool = False) -> None:
+    def __init__(self, binary_name: Union[str, CONST.Constants] = "", parent_window: Union[tk.Tk, None] = None, width: int = 500, height: int = 400, success: int = 0, error: int = 1, delay_init: bool = False, debug: bool = False) -> None:
         """
         The constructor of the class
 
@@ -27,6 +28,23 @@ class ViewImage(WT):
         """
 
         super(ViewImage, self).__init__()
+
+        # The variable allowing us to toggle the verbosity of the output
+        self.debug = debug
+        self.class_name = self.__class__.__name__
+
+        # Debug class instance
+        if callable(binary_name) is False:
+            self.const = binary_name
+        else:
+            self.const = CONST.Constants(
+                binary_name=str(binary_name),
+                output_format="default",
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                error=self.error,
+                success=self.success,
+                debug=self.debug
+            )
 
         # Status codes
         self.success: int = success
@@ -41,10 +59,10 @@ class ViewImage(WT):
         self.parent_window = None
         self._check_tkinter_parent_window(parent_window, delay_init=delay_init)
         # Gathering the dimensions of the user's screen to know where to place the window
-        self.host_dimensions: Dict[str, int] = None
+        self.host_dimensions: Union[Dict[str, int], None] = None
         self._check_host_screen_dimensions(delay_init=delay_init)
         # Initialising the window position calculator
-        self.cwp: CWP = None
+        self.cwp: Union[CWP, None] = None
         self._check_calculate_window_position(
             host_diemensions=self.host_dimensions,
             width=width,
@@ -84,9 +102,17 @@ class ViewImage(WT):
         :param width: The new width of the window
         :return: None
         """
+        self.const.pdebug(
+            f"Changing width of the window to {width}",
+            class_name=self.class_name
+        )
         self.width = width
         if self.cwp is not None:
             self.cwp.change_width(width)
+        self.const.pdebug(
+            f"Width of the window changed to {self.width}",
+            class_name=self.class_name
+        )
 
     def change_height(self, height: int) -> None:
         """
@@ -95,9 +121,17 @@ class ViewImage(WT):
         :param height: The new height of the window
         :return: None
         """
+        self.const.pdebug(
+            f"Changing height of the window to {height}",
+            class_name=self.class_name
+        )
         self.height = height
         if self.cwp is not None:
             self.cwp.change_height(height)
+        self.const.pdebug(
+            f"Height of the window changed to {self.height}",
+            class_name=self.class_name
+        )
 
     def _check_tkinter_parent_window(self, parent_window: Union[tk.Tk, None] = None, delay_init: bool = False) -> None:
         """
@@ -105,6 +139,10 @@ class ViewImage(WT):
 
         :return: None
         """
+        self.const.pdebug(
+            f"Checking if the parent window is a tkinter window: {parent_window}",
+            class_name=self.class_name
+        )
         if parent_window is None:
             if delay_init is True:
                 self.parent_window = None
@@ -112,6 +150,10 @@ class ViewImage(WT):
                 self.parent_window = self._create_parent_window()
         else:
             self.parent_window = parent_window
+        self.const.pdebug(
+            f"Parent window set to: {self.parent_window}",
+            class_name=self.class_name
+        )
 
     def _check_host_screen_dimensions(self, delay_init: bool = False) -> None:
         """
@@ -119,6 +161,10 @@ class ViewImage(WT):
 
         :return: None
         """
+        self.const.pdebug(
+            f"Checking if the host screen dimensions are set: {self.host_dimensions}",
+            class_name=self.class_name
+        )
         if self.host_dimensions is None:
             if delay_init is True:
                 self.host_dimensions = None
@@ -128,6 +174,10 @@ class ViewImage(WT):
             self.host_dimensions = self.get_current_host_screen_dimensions(
                 self.parent_window
             )
+        self.const.pdebug(
+            f"Host screen dimensions set to: {self.host_dimensions}",
+            class_name=self.class_name
+        )
 
     def _check_calculate_window_position(self, host_diemensions: dict, width: int, height: int, delay_init: bool = False) -> None:
         """
@@ -135,6 +185,10 @@ class ViewImage(WT):
 
         :return: None
         """
+        self.const.pdebug(
+            f"Checking if the calculate window position is set: {self.cwp}",
+            class_name=self.class_name
+        )
         if self.cwp is None:
             if delay_init is True:
                 self.cwp = None
@@ -151,6 +205,10 @@ class ViewImage(WT):
                 width,
                 height
             )
+        self.const.pdebug(
+            f"Calculate window position set to: {self.cwp}",
+            class_name=self.class_name
+        )
 
     def _create_parent_window(self) -> tk.Tk:
         """
@@ -159,8 +217,16 @@ class ViewImage(WT):
         Create the parent window
         :return: The parent window
         """
+        self.const.pdebug(
+            "Creating the parent window",
+            class_name=self.class_name
+        )
         window = tk.Tk()
         window.withdraw()
+        self.const.pdebug(
+            "Parent window created",
+            class_name=self.class_name
+        )
         return window
 
     def _load_image(self, image_path_src: str, width: int, height: int) -> dict:
@@ -180,6 +246,10 @@ class ViewImage(WT):
             * "name": <the_name:str>
             * "error": <the_error:str>  
         """
+        self.const.pdebug(
+            f"Loading image from path: {image_path_src}",
+            class_name=self.class_name
+        )
         if os.path.exists(image_path_src) is False:
             path_message = {
                 "name": image_path_src,
@@ -212,6 +282,10 @@ class ViewImage(WT):
         }
         self._images_buffer.append(data["err_message"])
         self.image_data.append(node)
+        self.const.pdebug(
+            f"Error loading image from path: {image_path_src}",
+            class_name=self.class_name
+        )
         return node
 
     def _load_images(self, image_paths: list[str], width: int, height: int) -> None:
@@ -221,14 +295,26 @@ class ViewImage(WT):
         :param image_paths: The paths to the images to load
         :return: None
         """
+        self.const.pdebug(
+            f"Loading multiple images from paths: {image_paths}",
+            class_name=self.class_name
+        )
         for image_index, image_item in enumerate(image_paths):
             self._load_image(image_item, width, height)
             self.max_images = image_index
+        self.const.pdebug(
+            f"Loaded {self.max_images + 1} images",
+            class_name=self.class_name
+        )
 
     def _update_current_image_displayed(self) -> None:
         """
         Update the image displayed
         """
+        self.const.pdebug(
+            f"Updating the current image displayed: {self.current_image}",
+            class_name=self.class_name
+        )
         if len(self.image_data) > 0 and self.current_image >= len(self.image_data):
             self.current_image = 0
         if isinstance(self._images_buffer[self.current_image], str) is True:
@@ -248,21 +334,41 @@ class ViewImage(WT):
                 image=self._images_buffer[self.current_image]
             )
             self.button_open_in_viewer.config(state=tk.NORMAL)
+        self.const.pdebug(
+            f"Current image displayed updated: {self.current_image}",
+            class_name=self.class_name
+        )
 
     def _update_current_image_index(self) -> None:
         """
         Update the index displayed of the current image 
         """
+        self.const.pdebug(
+            f"Updating the current image index: {self.current_image}",
+            class_name=self.class_name
+        )
         self.image_count.config(
             text=f"Image {self.current_image + 1}/{self.max_images + 1}"
+        )
+        self.const.pdebug(
+            f"Current image index updated: {self.current_image}",
+            class_name=self.class_name
         )
 
     def _update_current_image_title(self) -> None:
         """
         Update the title of the current image
         """
+        self.const.pdebug(
+            f"Updating the current image title: {self.current_image}",
+            class_name=self.class_name
+        )
         self.title_label.config(
             text=self.image_data[self.current_image]["name"]
+        )
+        self.const.pdebug(
+            f"Current image title updated: {self.image_data[self.current_image]['name']}",
+            class_name=self.class_name
         )
 
     def _previous_image(self, *args) -> None:
@@ -270,6 +376,10 @@ class ViewImage(WT):
         Display the previous image and it's name
         :return: None
         """
+        self.const.pdebug(
+            f"Displaying the previous image: {self.current_image}",
+            class_name=self.class_name
+        )
         if self.max_images == 0:
             self.image_viewer.config(text="No images to display !")
             return
@@ -280,12 +390,20 @@ class ViewImage(WT):
         self._update_current_image_displayed()
         self._update_current_image_title()
         self._update_current_image_index()
+        self.const.pdebug(
+            f"Previous image displayed: {self.current_image}",
+            class_name=self.class_name
+        )
 
     def _next_image(self, *args) -> None:
         """
         Display the next image and it's name
         :return: None
         """
+        self.const.pdebug(
+            f"Displaying the next image: {self.current_image}",
+            class_name=self.class_name
+        )
         if self.max_images == 0:
             self.image_viewer.config(text="No images to display !")
             return
@@ -296,6 +414,10 @@ class ViewImage(WT):
         self._update_current_image_displayed()
         self._update_current_image_title()
         self._update_current_image_index()
+        self.const.pdebug(
+            f"Displayed the next image: {self.current_image}",
+            class_name=self.class_name
+        )
 
     def hl_swap(self, item1: any, item2: any) -> list[any, any]:
         """
@@ -304,6 +426,10 @@ class ViewImage(WT):
         :param item2: The second item
         :return: The items with their values swapped
         """
+        self.const.pdebug(
+            f"Swapping items: {item1} and {item2}",
+            class_name=self.class_name
+        )
         return [item2, item1]
 
     def _open_in_system_viewer(self, *args) -> None:
@@ -311,6 +437,10 @@ class ViewImage(WT):
         Open the current image in the system viewer
         :return: None
         """
+        self.const.pdebug(
+            f"Opening the current image in the system viewer: {self.current_image}",
+            class_name=self.class_name
+        )
         current_image = self.current_image
         if self.current_image > self.max_images:
             current_image = 0
@@ -326,6 +456,10 @@ class ViewImage(WT):
             os.system(
                 f"open {self.image_data[current_image]['path']}"
             )
+        self.const.pdebug(
+            f"Opened the current image in the system viewer: {self.image_data[current_image]['path']}",
+            class_name=self.class_name
+        )
 
     def view(self, image_paths: list[str] | str, width: int = 0, height: int = 0) -> int:
         """
@@ -333,6 +467,10 @@ class ViewImage(WT):
         :param image_path: The path to the image to display
         :return: The status of the display (success:int  or error:int)
         """
+        self.const.pdebug(
+            f"Displaying image(s): {image_paths}",
+            class_name=self.class_name
+        )
         debug = False
         button_width = 10
         object_height = 135
@@ -575,6 +713,10 @@ class ViewImage(WT):
         self._previous_image()
         self._next_image()
         child_window.wait_window()
+        self.const.pdebug(
+            f"Ran the main function (called view) of the {self.class_name} class",
+            class_name=self.class_name
+        )
         return True
 
 
@@ -602,7 +744,8 @@ if __name__ == "__main__":
             print(f"Error: default path '{image_path}' is not a directory")
             sys.exit(1)
     VII = ViewImage(
-        None,
+        binary_name="ee",
+        parent_window=None,
         width=WINDOW_WIDTH,
         height=WINDOW_HEIGHT,
         success=SUCCESS,

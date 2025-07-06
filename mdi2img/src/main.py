@@ -121,12 +121,12 @@ class Main:
         )
         # --------------------- Initialise the viewer class ---------------------
         self.viewer_initialised: ViewImage = ViewImage(
-            None,
-            self.window_width,
-            self.window_height,
-            self.success,
-            self.error,
-            self.const,
+            binary_name=self.const,
+            parent_window=None,
+            width=self.window_width,
+            height=self.window_height,
+            success=self.success,
+            error=self.error,
             debug=self.debug,
             delay_init=True
         )
