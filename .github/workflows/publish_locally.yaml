@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  CWD: "./mdi2img"
+  CWD: "."
   SETUP_FILE: setup.py
   TAG_FILE: version.txt
   IS_RELEASE: is_release.txt
