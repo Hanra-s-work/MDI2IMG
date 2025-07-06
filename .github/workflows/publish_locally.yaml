@@ -1,17 +1,27 @@
 name: mdi2img-gh-packages
 
+# version: 1.0.4-commando
+# Version log:
+  # 1.0.0: Initial version
+  # 1.0.1: Add the xvfb library to the actions for any graphical environments
+  # 1.0.2: Put the tests in a container
+  # 1.0.3: Add python 3.13 to test with
+  # 1.0.4: Update code structure of the workflow to stabilize the publishing process
+
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
   workflow_dispatch:
 
 env:
+  CWD: "./mdi2img"
   SETUP_FILE: setup.py
   TAG_FILE: version.txt
   IS_RELEASE: is_release.txt
   MATRIX_VERSION_PUBLISHING: "3.10"
-  SOURCE_CODE_PATH: mdi2img/constants.py
+  SOURCE_CODE_PATH: mdi2img/__init__.py
+  LATEST_TAG: ""
 
 jobs:
   build:
@@ -35,7 +45,7 @@ jobs:
       id: get_latest_tag
       run: |
         echo "Getting tags"
-        git fetch --tags # Make sure to fetch the tags first
+        git fetch --tags || echo "⚠️ git fetch --tags failed, continuing anyway" # Make sure to fetch the tags first
         echo "Updated the list"
         latest_tag=$(git tag --list "v*" | sort -rV | head -n 1)
         echo "Latest tag = $latest_tag"
@@ -51,63 +61,6 @@ jobs:
         echo "new_tag = $latest_tag"
         echo "env.new_tag = ${{env.tag_file}}"
         echo "cat env.new_tag = $(cat ${{env.TAG_FILE}})"
-        echo -e "\n\n\n\n\n\n\n\n\n"
-
-    - name: Check if Latest Tag is a Release
-      id: is_release
-      run: |
-        latest_tag="$(cat ${{env.TAG_FILE}})"
-        is_release="false"
-        latest_updated_tag=$(git tag --list "v*" | sort -rV | head -n 1)
-        if [[ $latest_updated_tag == $latest_tag ]]; then
-          is_release="true"
-        fi
-        echo "$is_release" > ${{env.IS_RELEASE}}
-        echo -e "\n\n\n\n\n\n\n\n\n"
-        echo "Is_release = $is_release"
-        echo "env.Is_release = ${{env.is_release}}"
-        echo "cat env.Is_release = $(cat ${{env.is_release}})"
-        echo -e "\n\n\n\n\n\n\n\n\n"
-
-    - name: Increment Tag Version
-      id: increment_tag
-      run: |
-        is_release="$(cat ${{env.IS_RELEASE}})"
-        latest_tag="$(cat ${{env.TAG_FILE}})"
-        echo "ls = $(ls)"
-        echo "is_release = $is_release"
-        echo "latest_tag = $latest_tag"
-        if [[ $is_release == "true" ]]; then
-          # Parse the latest tag and increment the version component you want
-          # Example: Convert "v1.2.3" to "v1.2.4"
-          new_tag="${latest_tag/v/}"  # Remove the leading "v"
-          echo "new_tag = $new_tag"
-          IFS='.' read -ra version <<< "$new_tag"
-          echo "declare -p version = $(declare -p $version)"
-          echo "declare -p version[0] = $(declare -p ${version[0]})"
-          echo "declare -p version[1] = $(declare -p ${version[1]})"
-          echo "declare -p version[2] = $(declare -p ${version[2]})"
-          echo "version[2]+1 = $(expr "${version[2]}" + 1)"
-          echo "version[*] = ${version[*]}"
-          echo "version = ${version}"
-          echo "#version = ${#version}"
-          echo "version[0] = ${version[0]}"
-          echo "version[1] = ${version[1]}"
-          echo "version[2] = ${version[2]}"
-          version[2]=$(expr "${version[2]}" + 1)  # Increment the third version component
-          echo "Version = ${version[*]}"
-          new_tag="v${version[0]}.${version[1]}.${version[2]}"
-          echo "New Tag: $new_tag"
-          echo "$new_tag" > ${{env.TAG_FILE}}
-        else
-          echo "Latest tag is not a release. Skipping tag increment."
-        fi
-        echo -e "\n\n\n\n\n\n\n\n\n"
-        echo "new_tag = $new_tag"
-        echo "env.new_tag = ${{env.TAG_FILE}}"
-        echo "env.is_release = $(cat ${{env.IS_RELEASE}})"
-        echo "cat env.new_tag = $(cat ${{env.TAG_FILE}})"
-        echo "cat env.is_release = $(cat ${{env.IS_RELEASE}})"
         echo -e "\n\n\n\n\n\n\n\n\n"
     - name: Update module version in source code and builder file
       run: |
@@ -131,10 +84,10 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         lib_packages=$(find ./*/ -name "requirements.txt" -type f)
-        first_requirement=$(echo $lib_packages | cut -d " " -f 1)
+        first_requirements=$(echo $lib_packages | cut -d " " -f 1)
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ ${#first_requirements} -gt 0 ]; then pip install -r $first_requirements.txt; fi
-    
+        if [ ${#first_requirements} -gt 0 ]; then pip install -r $first_requirements; fi
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -144,17 +97,12 @@ jobs:
     
     - name: Test with pytest
       run: |
-        pytest
+        pytest -s
 
     - name: building the package
       run: |
         pip install build
         python -m build
-
-    - name: Update author
-      run: |
-        git config --local user.name "${{secrets.USER_NAME_E}}"
-        git config --local user.email "${{secrets.USER_EMAIL_E}}"
     - name: Publish as GitHub release
       if: matrix.python-version == env.MATRIX_VERSION_PUBLISHING
       run: |
