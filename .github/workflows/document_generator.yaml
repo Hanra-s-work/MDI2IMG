@@ -6,7 +6,7 @@ name: doxygen_generator
 on:
   push:
       tags:
-          - "v*.*.*"
+          - "v*.*.*-doc"
       branches:
           - main
   pull_request:
