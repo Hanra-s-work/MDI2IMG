@@ -3,4 +3,4 @@ pillow ==11.3.0
 display-tty ==1.1.12
 # pyqt6 == 6.9.1
 # window-asset-pyqt6 ==1.0.0
-window-asset-tkinter ==1.0.14
+window-asset-tkinter ==1.0.16
