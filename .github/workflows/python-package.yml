@@ -108,7 +108,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        xvfb-run pytest -s
+        pytest -s
 
     - name: building the package
       run: |
