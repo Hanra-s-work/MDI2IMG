@@ -6,7 +6,7 @@
 ##
 
 # Use a base image with necessary dependencies
-FROM fedora:43
+FROM fedora:44
 
 # The environment setup
 ENV LANG=en_US.UTF-8 \
