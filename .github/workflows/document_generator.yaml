@@ -126,7 +126,7 @@ jobs:
 
       - name: Save cache
         id: cache-save
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{env.CACHE_KEY}}
           path: "${{env.OUTPUT_GENERATION}}"
@@ -146,7 +146,7 @@ jobs:
           fetch-depth: 0
       - name: Get generated documentation
         id: cache-documentation-restore
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{env.CACHE_KEY}}
           path: "${{env.OUTPUT_GENERATION}}"
@@ -281,7 +281,7 @@ jobs:
 
       - name: Save cache
         id: cache-save
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{env.CACHE_KEY_CLEANED}}
           path: "${{env.TEMPORARY_FOLDER}}"
@@ -307,7 +307,7 @@ jobs:
 
       - name: Get generated documentation
         id: html-cache-restore
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{env.CACHE_KEY_CLEANED}}
           path: "${{env.OUTPUT_GENERATION}}"
@@ -346,7 +346,7 @@ jobs:
 
       - name: Get generated documentation
         id: cache-documentation-restore
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{env.CACHE_KEY_CLEANED}}
           path: "${{env.TEMPORARY_FOLDER}}"
@@ -585,7 +585,7 @@ jobs:
           printf "%s" "${{env.COMMIT_TITLE}}" > "${{env.FINAL_OUTPUT}}/commit_title.txt"
 
       - name: Uploading the cache so that the 3rd workflow can access it
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{env.CACHE_NAME}}
           path: "${{env.FINAL_OUTPUT}}"
