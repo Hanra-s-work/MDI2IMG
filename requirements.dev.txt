@@ -1,5 +1,5 @@
 build ==1.3.0
-pytest ==9.0.1
+pytest ==9.0.2
 wheel ==0.45.1
 setuptools ==80.9.0
 # Installing the default requirements
