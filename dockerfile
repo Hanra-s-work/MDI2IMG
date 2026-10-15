@@ -1,7 +1,7 @@
 # This is a dockerfile provided to help linux and mac users run the library by providing the required environement for the windows binary the library relies on can run.
 
 # Using the busybox image to have binaries that are compatible with the linux image in case they get stripped by the build process.
-FROM busybox:1.37.0-uclibc AS binary_base
+FROM busybox:1.38.0-uclibc AS binary_base
 
 # Using the official python image as the base image in the container.
 FROM python:3.14.3-slim-bookworm
